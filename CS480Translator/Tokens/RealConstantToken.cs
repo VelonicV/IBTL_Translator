@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class IntegerConstantToken : GenericToken
+    class RealConstantToken : GenericToken
     {
 
-        public int integerValue;
+        public double realValue;
 
-        public IntegerConstantToken(string value)
+        public RealConstantToken(string value)
         {
             if (!validate(value))
             {
-                throw new Exception("Error: Invalid integer constant string passed into token");
+                throw new Exception("Error: Invalid real constant string passed into token");
             }
         }
 
@@ -23,14 +23,14 @@ namespace CS480Translator.Tokens
         {
             try
             {
-                integerValue = Convert.ToInt32(value);
+                realValue = Convert.ToDouble(value);
                 return true;
             }
             catch
             {
                 return false;
             }
-        }
 
+        }
     }
 }

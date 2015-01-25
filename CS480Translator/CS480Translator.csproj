@@ -41,11 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tokens\BooleanConstantToken.cs" />
     <Compile Include="Tokens\GenericToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokens\IntegerConstantToken.cs" />
     <Compile Include="Tokens\RealConstantToken.cs" />
+    <Compile Include="Tokens\StringConstantToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
