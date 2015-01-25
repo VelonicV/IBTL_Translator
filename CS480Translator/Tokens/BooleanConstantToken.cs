@@ -9,6 +9,9 @@ namespace CS480Translator.Tokens
     class BooleanConstantToken : GenericToken
     {
         public bool booleanValue;
+        private string trueString = "true";
+        private string falseString = "false";
+
         public BooleanConstantToken(string value)
         {
             if (!validate(value))
@@ -19,11 +22,11 @@ namespace CS480Translator.Tokens
 
         protected override bool validate(string value)
         {
-            if (value == "true")
+            if (value == trueString)
             {
                 booleanValue = true;
             }
-            else if (value == "false")
+            else if (value == falseString)
             {
                 booleanValue = false;
             }

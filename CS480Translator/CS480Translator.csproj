@@ -42,12 +42,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tokens\BooleanConstantToken.cs" />
+    <Compile Include="Tokens\BooleanOperatorToken.cs" />
+    <Compile Include="Tokens\ContextSensitiveOperatorToken.cs" />
     <Compile Include="Tokens\GenericToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tokens\IdToken.cs" />
     <Compile Include="Tokens\IntegerConstantToken.cs" />
+    <Compile Include="Tokens\KeywordToken.cs" />
+    <Compile Include="Tokens\MathOperatorToken.cs" />
     <Compile Include="Tokens\RealConstantToken.cs" />
+    <Compile Include="Tokens\RealMathOperatorToken.cs" />
+    <Compile Include="Tokens\RelationalOperatorToken.cs" />
+    <Compile Include="Tokens\SetValuesToken.cs" />
     <Compile Include="Tokens\StringConstantToken.cs" />
+    <Compile Include="Tokens\VariableTypeToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
