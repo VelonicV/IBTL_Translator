@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
+    //Superclass of tokens that have a defined set of valid inputs, so the validate function is the same for all of them.
     abstract class SetValuesToken : GenericToken
     {
         public string word;
@@ -17,9 +18,11 @@ namespace CS480Translator.Tokens
             {
                 return false;
             }
-
-            word = value;
-            return true;
+            else
+            {
+                word = value;
+                return true;
+            }
         }
 
     }

@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace CS480Translator
 {
-    class Program
+    class Lexalizer
     {
-        static void Main(string[] args)
-        {
-            Tokens.TokensTester.runTokenTest();
-        }
     }
 }

@@ -25,7 +25,7 @@ namespace CS480Translator.Tokens
             {
                 return false;
             }
-            else if (!Char.IsLetter(arr[0]))
+            else if ((!Char.IsLetter(arr[0])) && (arr[0] != '_'))
             {
                 return false;
             }
@@ -40,6 +40,7 @@ namespace CS480Translator.Tokens
 
             idName = value;
             return true;
-        }
+        }
+
     }
 }

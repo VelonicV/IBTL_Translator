@@ -10,7 +10,7 @@ namespace CS480Translator.Tokens
     {
         public ContextSensitiveOperatorToken(string value)
         {
-            validInput = new string[] { "+" };
+            validInput = new string[] { "+", "-" };
             if (!validate(value))
             {
                 throw new Exception("Error: Invalid context sensitive operator string passed into token");

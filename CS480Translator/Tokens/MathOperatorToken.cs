@@ -11,7 +11,7 @@ namespace CS480Translator.Tokens
 
         public MathOperatorToken(string value)
         {
-            validInput = new string[] { "-", "*", "/", "%", "^" };
+            validInput = new string[] { "*", "/", "%", "^" };
             if (!validate(value))
             {
                 throw new Exception("Error: Invalid math operator string passed into token");
