@@ -8,7 +8,7 @@ namespace CS480Translator.Tokens
 {
     class TokensTester
     {
-        private const int LOOP = 100;
+        private const int LOOP = 10;
         private const int MAX_RAND_STRING_LENGTH = 8;
 
         private static string genRandString(int maxLength, Random random)
