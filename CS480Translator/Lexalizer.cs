@@ -54,10 +54,35 @@ namespace CS480Translator
                 {
                     return createNumToken();
                 }
+                else if (peek() == '"')
+                {
+                    next();
+                    return createStringToken();
+                }
+                else if ((peek() == '+') || (peek() == '-'))
+                {
+                    return new Tokens.ContextSensitiveOperatorToken(Char.ToString(next()));
+                }
+                else if ((peek() == '*') || (peek() == '/') || (peek() == '%') || (peek() == '^'))
+                {
+                    return new Tokens.MathOperatorToken(Char.ToString(next()));
+                }
+                else if((peek() == '=') || (peek() == '!') || (peek() == '>') || (peek() == '<')) 
+                {
+                    return createRelOpToken();
+                }
+                else if ((peek() == '(') || (peek() == ')') || (peek() == ':'))
+                {
+                    return createSymKeyToken();
+                }
                 else if(peek() == '\n')
                 {
                     next();
                     line++;
+                }
+                else if((peek() == ' ') || (peek() == '\t'))
+                {
+                    next();
                 }
                 else
                 {
@@ -66,6 +91,97 @@ namespace CS480Translator
             }
 
             return null;
+        }
+
+        //Symbol keyword parser function.
+        private Tokens.KeywordToken createSymKeyToken()
+        {
+            StringBuilder sb = new StringBuilder();
+            if ((peek() == '(') || (peek() == ')'))
+            {
+                sb.Append(next());
+                return new Tokens.KeywordToken(sb.ToString());
+            }
+            else
+            {
+                sb.Append(next());
+                if ((peek() == '=') && more())
+                {
+                    sb.Append(next());
+                    return new Tokens.KeywordToken(sb.ToString());
+                }
+                else
+                {
+                    Console.WriteLine("Error: Invalid syntax starting with : declared on line {0}.", line);
+                    Console.ReadLine();
+                    Environment.Exit(1);
+                    return null;
+                }
+            }
+        }
+
+        //Relational operator parser function.
+        private Tokens.RelationalOperatorToken createRelOpToken()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (peek() == '=')
+            {
+                sb.Append(next());
+                return new Tokens.RelationalOperatorToken(sb.ToString());
+            }
+            else if ((peek() == '<') || (peek() == '>'))
+            {
+                sb.Append(next());
+                if ((peek() == '=') && more())
+                {
+                    sb.Append(next());
+                }
+
+                return new Tokens.RelationalOperatorToken(sb.ToString());
+            }
+            else
+            {
+                sb.Append(next());
+                if (peek() == '=')
+                {
+                    sb.Append(next());
+                    return new Tokens.RelationalOperatorToken(sb.ToString());
+                }
+                else
+                {
+                    Console.WriteLine("Error: Invalid syntax starting with ! declared on line {0}.", line);
+                    Console.ReadLine();
+                    Environment.Exit(1);
+                    return null;
+                }
+            }
+
+        }
+
+        //String token parser function.
+        private Tokens.StringConstantToken createStringToken()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            while ((peek() != '"') && (peek() != '\n') && more())
+            {
+                sb.Append(next());
+            }
+
+            if ((peek() == '"') && more())
+            {
+                next();
+                return new Tokens.StringConstantToken(sb.ToString());
+            }
+            else
+            {
+                Console.WriteLine("Error: End of line reached without finding second pair of quotation marks on line {0}.", line);
+                Console.ReadLine();
+                Environment.Exit(1);
+                return null;
+            }
+
         }
 
         //Number token parser function.
