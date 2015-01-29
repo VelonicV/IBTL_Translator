@@ -10,7 +10,7 @@ namespace CS480Translator.Tokens
     abstract class SetValuesToken : GenericToken
     {
         public string word;
-        protected string[] validInput;
+        public string[] validInput;
 
         protected override bool validate(string value)
         {

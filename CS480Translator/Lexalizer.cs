@@ -54,6 +54,10 @@ namespace CS480Translator
                 {
                     return createNumToken();
                 }
+                else if (Char.IsLetter(peek()) || (peek() == '_'))
+                {
+                    return createLetterToken();
+                }
                 else if (peek() == '"')
                 {
                     next();
@@ -89,6 +93,57 @@ namespace CS480Translator
                     next();
                 }
             }
+
+            return null;
+        }
+
+        private Tokens.GenericToken createLetterToken()
+        {
+
+            string[] variableTypes = { "int", "real", "bool", "string" };
+            string[] booleanOperators = { "and", "or", "not" };
+            string[] realMathOperators = { "sin", "cos", "tan" };
+            string[] letterKeywords = { "if", "while", "let", "stdout" };
+            string[] booleanConstants = { "true", "false" };
+
+            StringBuilder sb = new StringBuilder();
+
+            while ((Char.IsLetter(peek()) || Char.IsNumber(peek()) || (peek() == '_')) && more())
+            {
+                sb.Append(next());
+            }
+
+            string final = sb.ToString();
+            if (variableTypes.Contains(final))
+            {
+                return new Tokens.VariableTypeToken(final);
+            }
+            else if (booleanOperators.Contains(final))
+            {
+                return new Tokens.BooleanOperatorToken(final);
+            }
+            else if (realMathOperators.Contains(final))
+            {
+                return new Tokens.RealMathOperatorToken(final);
+            }
+            else if (letterKeywords.Contains(final))
+            {
+                return new Tokens.KeywordToken(final);
+            }
+            else if (booleanConstants.Contains(final))
+            {
+                return new Tokens.BooleanConstantToken(final);
+            }
+            else
+            {
+                return new Tokens.IdToken(final);
+            }
+
+        }
+
+        private Tokens.IdToken createIdToken()
+        {
+
 
             return null;
         }
