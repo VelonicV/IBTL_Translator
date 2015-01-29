@@ -65,11 +65,11 @@ namespace CS480Translator
                 }
                 else if ((peek() == '+') || (peek() == '-'))
                 {
-                    return new Tokens.ContextSensitiveOperatorToken(Char.ToString(next()));
+                    return new Tokens.CSOP(Char.ToString(next()));
                 }
                 else if ((peek() == '*') || (peek() == '/') || (peek() == '%') || (peek() == '^'))
                 {
-                    return new Tokens.MathOperatorToken(Char.ToString(next()));
+                    return new Tokens.MOT(Char.ToString(next()));
                 }
                 else if((peek() == '=') || (peek() == '!') || (peek() == '>') || (peek() == '<')) 
                 {
@@ -84,19 +84,22 @@ namespace CS480Translator
                     next();
                     line++;
                 }
-                else if((peek() == ' ') || (peek() == '\t'))
+                else if((peek() == ' ') || (peek() == '\t') || (peek() == '\r'))
                 {
                     next();
                 }
                 else
                 {
-                    next();
+                    Console.WriteLine("Error: Invalid syntax starting with {0} declared on line {1}.", peek(), line);
+                    Console.ReadLine();
+                    Environment.Exit(1);
                 }
             }
 
             return null;
         }
 
+        //Letter-based token parser.
         private Tokens.GenericToken createLetterToken()
         {
 
@@ -116,46 +119,39 @@ namespace CS480Translator
             string final = sb.ToString();
             if (variableTypes.Contains(final))
             {
-                return new Tokens.VariableTypeToken(final);
+                return new Tokens.VTT(final);
             }
             else if (booleanOperators.Contains(final))
             {
-                return new Tokens.BooleanOperatorToken(final);
+                return new Tokens.BOT(final);
             }
             else if (realMathOperators.Contains(final))
             {
-                return new Tokens.RealMathOperatorToken(final);
+                return new Tokens.RMOT(final);
             }
             else if (letterKeywords.Contains(final))
             {
-                return new Tokens.KeywordToken(final);
+                return new Tokens.KT(final);
             }
             else if (booleanConstants.Contains(final))
             {
-                return new Tokens.BooleanConstantToken(final);
+                return new Tokens.BCT(final);
             }
             else
             {
-                return new Tokens.IdToken(final);
+                return new Tokens.IT(final);
             }
 
         }
 
-        private Tokens.IdToken createIdToken()
-        {
-
-
-            return null;
-        }
-
         //Symbol keyword parser function.
-        private Tokens.KeywordToken createSymKeyToken()
+        private Tokens.KT createSymKeyToken()
         {
             StringBuilder sb = new StringBuilder();
             if ((peek() == '(') || (peek() == ')'))
             {
                 sb.Append(next());
-                return new Tokens.KeywordToken(sb.ToString());
+                return new Tokens.KT(sb.ToString());
             }
             else
             {
@@ -163,7 +159,7 @@ namespace CS480Translator
                 if ((peek() == '=') && more())
                 {
                     sb.Append(next());
-                    return new Tokens.KeywordToken(sb.ToString());
+                    return new Tokens.KT(sb.ToString());
                 }
                 else
                 {
@@ -176,14 +172,14 @@ namespace CS480Translator
         }
 
         //Relational operator parser function.
-        private Tokens.RelationalOperatorToken createRelOpToken()
+        private Tokens.ROT createRelOpToken()
         {
             StringBuilder sb = new StringBuilder();
 
             if (peek() == '=')
             {
                 sb.Append(next());
-                return new Tokens.RelationalOperatorToken(sb.ToString());
+                return new Tokens.ROT(sb.ToString());
             }
             else if ((peek() == '<') || (peek() == '>'))
             {
@@ -193,7 +189,7 @@ namespace CS480Translator
                     sb.Append(next());
                 }
 
-                return new Tokens.RelationalOperatorToken(sb.ToString());
+                return new Tokens.ROT(sb.ToString());
             }
             else
             {
@@ -201,7 +197,7 @@ namespace CS480Translator
                 if (peek() == '=')
                 {
                     sb.Append(next());
-                    return new Tokens.RelationalOperatorToken(sb.ToString());
+                    return new Tokens.ROT(sb.ToString());
                 }
                 else
                 {
@@ -215,7 +211,7 @@ namespace CS480Translator
         }
 
         //String token parser function.
-        private Tokens.StringConstantToken createStringToken()
+        private Tokens.SCT createStringToken()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -227,7 +223,7 @@ namespace CS480Translator
             if ((peek() == '"') && more())
             {
                 next();
-                return new Tokens.StringConstantToken(sb.ToString());
+                return new Tokens.SCT(sb.ToString());
             }
             else
             {
@@ -267,18 +263,18 @@ namespace CS480Translator
                 }
 
                 //Return the real constant token.
-                return new Tokens.RealConstantToken(sb.ToString());
+                return new Tokens.RCT(sb.ToString());
             }
             //Scientific notation found, call the appending function.
             else if (((peek() == 'e') || (peek() == 'E')) && more())
             {
                 scientific(sb);
-                return new Tokens.RealConstantToken(sb.ToString());
+                return new Tokens.RCT(sb.ToString());
             }
             //Nothing but digits found, return it as an integer token.
             else
             {
-                return new Tokens.IntegerConstantToken(sb.ToString());
+                return new Tokens.ICT(sb.ToString());
             }
 
         }

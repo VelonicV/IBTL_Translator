@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class VariableTypeToken : SetValuesToken
+    class VTT : SetValuesToken
     {
-        public VariableTypeToken(string value)
+        public VTT(string value)
         {
             validInput = new string[] { "int", "real", "bool", "string" };
             if (!validate(value))

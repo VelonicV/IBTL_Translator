@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class ContextSensitiveOperatorToken : SetValuesToken
+    class CSOP : SetValuesToken
     {
-        public ContextSensitiveOperatorToken(string value)
+        public CSOP(string value)
         {
             validInput = new string[] { "+", "-" };
             if (!validate(value))

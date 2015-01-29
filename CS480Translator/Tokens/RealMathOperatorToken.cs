@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class RealMathOperatorToken : SetValuesToken
+    class RMOT : SetValuesToken
     {
-        public RealMathOperatorToken(string value)
+        public RMOT(string value)
         {
             validInput = new string[] { "sin", "cos", "tan" };
             if (!validate(value))

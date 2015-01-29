@@ -54,9 +54,9 @@ namespace CS480Translator.Tokens
         private static void bctTest()
         {
             Random random = new Random();
-            BooleanConstantToken bct;
-            bct = new BooleanConstantToken("true");
-            bct = new BooleanConstantToken("false");
+            BCT bct;
+            bct = new BCT("true");
+            bct = new BCT("false");
             for (int i = 0; i < LOOP; i++ )
             {
                 string temp = "";
@@ -64,7 +64,7 @@ namespace CS480Translator.Tokens
                 try
                 {
                     temp = genRandString(MAX_RAND_STRING_LENGTH, random);
-                    bct = new BooleanConstantToken(temp);
+                    bct = new BCT(temp);
                     caught = true;
                 }
                 catch { }
@@ -79,10 +79,10 @@ namespace CS480Translator.Tokens
         private static void botTest()
         {
             Random random = new Random();
-            BooleanOperatorToken bot;
-            bot = new BooleanOperatorToken("and");
-            bot = new BooleanOperatorToken("or");
-            bot = new BooleanOperatorToken("not");
+            BOT bot;
+            bot = new BOT("and");
+            bot = new BOT("or");
+            bot = new BOT("not");
             for (int i = 0; i < LOOP; i++)
             {
                 string temp = "";
@@ -90,7 +90,7 @@ namespace CS480Translator.Tokens
                 try
                 {
                     temp = genRandString(MAX_RAND_STRING_LENGTH, random);
-                    bot = new BooleanOperatorToken(temp);
+                    bot = new BOT(temp);
                     caught = true;
                 }
                 catch { }
@@ -104,9 +104,9 @@ namespace CS480Translator.Tokens
         private static void csotTest()
         {
             Random random = new Random();
-            ContextSensitiveOperatorToken csot;
-            csot = new ContextSensitiveOperatorToken("+");
-            csot = new ContextSensitiveOperatorToken("-");
+            CSOP csot;
+            csot = new CSOP("+");
+            csot = new CSOP("-");
             for (int i = 0; i < LOOP; i++)
             {
                 string temp = "";
@@ -114,7 +114,7 @@ namespace CS480Translator.Tokens
                 try
                 {
                     temp = genRandString(MAX_RAND_STRING_LENGTH, random);
-                    csot = new ContextSensitiveOperatorToken(temp);
+                    csot = new CSOP(temp);
                     caught = true;
                 }
                 catch { }
@@ -127,18 +127,18 @@ namespace CS480Translator.Tokens
 
         private static void itTest()
         {
-            IdToken it;
-            it = new IdToken("_testest123");
-            it = new IdToken("HELLOPEOPLE");
-            it = new IdToken("TeStingThe_ID");
-            it = new IdToken("Hai_123_fun_22_");
+            IT it;
+            it = new IT("_testest123");
+            it = new IT("HELLOPEOPLE");
+            it = new IT("TeStingThe_ID");
+            it = new IT("Hai_123_fun_22_");
 
             string[] tests = { "888", "8TestingID", "$haisup" };
             foreach (string x in tests) { 
                 bool caught = false;
                 try
                 {
-                    it = new IdToken(x);
+                    it = new IT(x);
                     caught = true;
                 }
                 catch { }
@@ -153,14 +153,14 @@ namespace CS480Translator.Tokens
         private static void ktTest()
         {
             Random random = new Random();
-            KeywordToken kt;
-            kt = new KeywordToken("(");
-            kt = new KeywordToken(")");
-            kt = new KeywordToken(":=");
-            kt = new KeywordToken("if");
-            kt = new KeywordToken("while");
-            kt = new KeywordToken("let");
-            kt = new KeywordToken("stdout");
+            KT kt;
+            kt = new KT("(");
+            kt = new KT(")");
+            kt = new KT(":=");
+            kt = new KT("if");
+            kt = new KT("while");
+            kt = new KT("let");
+            kt = new KT("stdout");
             for (int i = 0; i < LOOP; i++)
             {
                 string temp = "";
@@ -168,7 +168,7 @@ namespace CS480Translator.Tokens
                 try
                 {
                     temp = genRandString(MAX_RAND_STRING_LENGTH, random);
-                    kt = new KeywordToken(temp);
+                    kt = new KT(temp);
                     caught = true;
                 }
                 catch { }
@@ -182,11 +182,11 @@ namespace CS480Translator.Tokens
         private static void motTest()
         {
             Random random = new Random();
-            MathOperatorToken mot;
-            mot = new MathOperatorToken("*");
-            mot = new MathOperatorToken("/");
-            mot = new MathOperatorToken("%");
-            mot = new MathOperatorToken("^");
+            MOT mot;
+            mot = new MOT("*");
+            mot = new MOT("/");
+            mot = new MOT("%");
+            mot = new MOT("^");
             for (int i = 0; i < LOOP; i++)
             {
                 string temp = "";
@@ -194,7 +194,7 @@ namespace CS480Translator.Tokens
                 try
                 {
                     temp = genRandString(MAX_RAND_STRING_LENGTH, random);
-                    mot = new MathOperatorToken(temp);
+                    mot = new MOT(temp);
                     caught = true;
                 }
                 catch { }
@@ -208,10 +208,10 @@ namespace CS480Translator.Tokens
         private static void rmotTest()
         {
             Random random = new Random();
-            RealMathOperatorToken rmot;
-            rmot = new RealMathOperatorToken("sin");
-            rmot = new RealMathOperatorToken("cos");
-            rmot = new RealMathOperatorToken("tan");
+            RMOT rmot;
+            rmot = new RMOT("sin");
+            rmot = new RMOT("cos");
+            rmot = new RMOT("tan");
             for (int i = 0; i < LOOP; i++)
             {
                 string temp = "";
@@ -219,7 +219,7 @@ namespace CS480Translator.Tokens
                 try
                 {
                     temp = genRandString(MAX_RAND_STRING_LENGTH, random);
-                    rmot = new RealMathOperatorToken(temp);
+                    rmot = new RMOT(temp);
                     caught = true;
                 }
                 catch { }
@@ -234,13 +234,13 @@ namespace CS480Translator.Tokens
         private static void rotTest()
         {
             Random random = new Random();
-            RelationalOperatorToken rot;
-            rot = new RelationalOperatorToken("=");
-            rot = new RelationalOperatorToken("<");
-            rot = new RelationalOperatorToken(">");
-            rot = new RelationalOperatorToken("<=");
-            rot = new RelationalOperatorToken(">=");
-            rot = new RelationalOperatorToken("!=");
+            ROT rot;
+            rot = new ROT("=");
+            rot = new ROT("<");
+            rot = new ROT(">");
+            rot = new ROT("<=");
+            rot = new ROT(">=");
+            rot = new ROT("!=");
             for (int i = 0; i < LOOP; i++)
             {
                 string temp = "";
@@ -248,7 +248,7 @@ namespace CS480Translator.Tokens
                 try
                 {
                     temp = genRandString(MAX_RAND_STRING_LENGTH, random);
-                    rot = new RelationalOperatorToken(temp);
+                    rot = new ROT(temp);
                     caught = true;
                 }
                 catch { }
@@ -262,11 +262,11 @@ namespace CS480Translator.Tokens
         private static void vttTest()
         {
             Random random = new Random();
-            VariableTypeToken vtt;
-            vtt = new VariableTypeToken("bool");
-            vtt = new VariableTypeToken("int");
-            vtt = new VariableTypeToken("real");
-            vtt = new VariableTypeToken("string");
+            VTT vtt;
+            vtt = new VTT("bool");
+            vtt = new VTT("int");
+            vtt = new VTT("real");
+            vtt = new VTT("string");
             for (int i = 0; i < LOOP; i++)
             {
                 string temp = "";
@@ -274,7 +274,7 @@ namespace CS480Translator.Tokens
                 try
                 {
                     temp = genRandString(MAX_RAND_STRING_LENGTH, random);
-                    vtt = new VariableTypeToken(temp);
+                    vtt = new VTT(temp);
                     caught = true;
                 }
                 catch { }

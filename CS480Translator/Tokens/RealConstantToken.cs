@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class RealConstantToken : GenericToken
+    class RCT : GenericToken
     {
 
         public double realValue;
 
-        public RealConstantToken(string value)
+        public RCT(string value)
         {
             if (!validate(value))
             {

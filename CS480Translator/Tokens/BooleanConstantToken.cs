@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class BooleanConstantToken : GenericToken
+    class BCT : GenericToken
     {
         public bool booleanValue;
         private string trueString = "true";
         private string falseString = "false";
 
-        public BooleanConstantToken(string value)
+        public BCT(string value)
         {
             if (!validate(value))
             {

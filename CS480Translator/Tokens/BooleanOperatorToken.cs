@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class BooleanOperatorToken : SetValuesToken
+    class BOT : SetValuesToken
     {
-        public BooleanOperatorToken(string value)
+        public BOT(string value)
         {
             validInput = new string[] { "and", "or", "not" };
             if (!validate(value))

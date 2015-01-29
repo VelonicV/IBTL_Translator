@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class KeywordToken : SetValuesToken
+    class KT : SetValuesToken
     {
-        public KeywordToken(string value)
+        public KT(string value)
         {
             validInput = new string[] { "(", ")", ":=", "if", "while", "let", "stdout" };
             if (!validate(value))

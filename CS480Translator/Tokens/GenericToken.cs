@@ -10,7 +10,6 @@ namespace CS480Translator.Tokens
     //Forces all subclasses to validate the input by overriding the validate() method.
     abstract class GenericToken
     {
-
         abstract protected bool validate(string value);
 
     }

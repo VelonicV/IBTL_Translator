@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class IntegerConstantToken : GenericToken
+    class ICT : GenericToken
     {
 
         public int integerValue;
 
-        public IntegerConstantToken(string value)
+        public ICT(string value)
         {
             if (!validate(value))
             {

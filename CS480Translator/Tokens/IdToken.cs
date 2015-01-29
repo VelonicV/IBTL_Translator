@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class IdToken : GenericToken
+    class IT : GenericToken
     {
         public string idName;
 
-        public IdToken(string value)
+        public IT(string value)
         {
             if (!validate(value))
             {

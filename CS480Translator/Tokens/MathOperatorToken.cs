@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class MathOperatorToken : SetValuesToken
+    class MOT : SetValuesToken
     {
 
-        public MathOperatorToken(string value)
+        public MOT(string value)
         {
             validInput = new string[] { "*", "/", "%", "^" };
             if (!validate(value))

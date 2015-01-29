@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
-    class RelationalOperatorToken : SetValuesToken
+    class ROT : SetValuesToken
     {
-        public RelationalOperatorToken(string value)
+        public ROT(string value)
         {
             validInput = new string[] { "=", "<", ">", ">=", "<=", "!=" };
             if (!validate(value))
