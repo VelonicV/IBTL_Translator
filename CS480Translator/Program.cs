@@ -10,7 +10,17 @@ namespace CS480Translator
     {
         static void Main(string[] args)
         {
-            Tokens.TokensTester.runTokenTest();
+            Lexalizer lex = new Lexalizer(@"C:\stutest.in");
+            Tokens.GenericToken token = lex.getNextToken();
+
+            while (token != null)
+            {
+                Console.WriteLine(token.ToString());
+                token = lex.getNextToken();
+            }
+
+            Console.ReadLine();
+
         }
     }
 }

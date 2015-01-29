@@ -32,5 +32,10 @@ namespace CS480Translator.Tokens
             }
 
         }
+
+        public override string ToString()
+        {
+            return (this.GetType().Name + ":\t" + realValue);
+        }
     }
 }
