@@ -9,7 +9,7 @@ namespace CS480Translator.Tokens
     class RCT : GenericToken
     {
 
-        public double realValue;
+        public float realValue;
 
         public RCT(string value)
         {
@@ -23,13 +23,18 @@ namespace CS480Translator.Tokens
         {
             try
             {
-                realValue = Convert.ToDouble(value);
+                realValue = Convert.ToSingle(value);
                 return true;
             }
-            catch
+            catch (OverflowException e)
             {
-                return false;
+                Console.WriteLine("Error: Real constant too large to store in real value type.");
+                
+                Environment.Exit(1);
             }
+            catch { }
+
+            return false;
 
         }
 

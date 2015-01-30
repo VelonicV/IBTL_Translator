@@ -33,7 +33,6 @@ namespace CS480Translator
             catch
             {
                 Console.WriteLine("Error: could not open given file in read-only mode.");
-                Console.ReadLine();
                 Environment.Exit(1);
             }
 
@@ -91,7 +90,6 @@ namespace CS480Translator
                 else
                 {
                     Console.WriteLine("Error: Invalid syntax starting with {0} declared on line {1}.", peek(), line);
-                    Console.ReadLine();
                     Environment.Exit(1);
                 }
             }
@@ -164,7 +162,6 @@ namespace CS480Translator
                 else
                 {
                     Console.WriteLine("Error: Invalid syntax starting with : declared on line {0}.", line);
-                    Console.ReadLine();
                     Environment.Exit(1);
                     return null;
                 }
@@ -202,7 +199,6 @@ namespace CS480Translator
                 else
                 {
                     Console.WriteLine("Error: Invalid syntax starting with ! declared on line {0}.", line);
-                    Console.ReadLine();
                     Environment.Exit(1);
                     return null;
                 }
@@ -217,7 +213,75 @@ namespace CS480Translator
 
             while ((peek() != '"') && (peek() != '\n') && more())
             {
-                sb.Append(next());
+                //Instance of a special character.
+                if ((peek() == '\\') && more())
+                {
+                    next();
+                    if (peek() == '\\')
+                    {
+                        next();
+                        sb.Append('\\');
+                    }
+                    else if (peek() == '\'')
+                    {
+                        next();
+                        sb.Append('\'');
+                    }
+                    else if (peek() == '"')
+                    {
+                        next();
+                        sb.Append('"');
+                    }
+                    else if (peek() == '?')
+                    {
+                        next();
+                        sb.Append('?');
+                    }
+                    else if (peek() == 'a')
+                    {
+                        next();
+                        sb.Append('\a');
+                    }
+                    else if (peek() == 'b')
+                    {
+                        next();
+                        sb.Append('\b');
+                    }
+                    else if (peek() == 'f')
+                    {
+                        next();
+                        sb.Append('\f');
+                    }
+                    else if (peek() == 'n')
+                    {
+                        next();
+                        sb.Append('\n');
+                    }
+                    else if (peek() == 'r')
+                    {
+                        next();
+                        sb.Append('\r');
+                    }
+                    else if (peek() == 't')
+                    {
+                        next();
+                        sb.Append('\t');
+                    }
+                    else if (peek() == 'v')
+                    {
+                        next();
+                        sb.Append('\v');
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Invalid character escape sequence in string on line {0}.", line);
+                        Environment.Exit(1);
+                    }
+
+                }
+                else {
+                    sb.Append(next());
+                }          
             }
 
             if ((peek() == '"') && more())
@@ -227,8 +291,7 @@ namespace CS480Translator
             }
             else
             {
-                Console.WriteLine("Error: End of line reached without finding second pair of quotation marks on line {0}.", line);
-                Console.ReadLine();
+                Console.WriteLine("Error: End of line reached without finding second pair of quotation marks on line {0}.", line); 
                 Environment.Exit(1);
                 return null;
             }
@@ -251,15 +314,22 @@ namespace CS480Translator
             {
                 //Append decimal and the digits following it.
                 sb.Append(next());
+
                 while (Char.IsDigit(peek()) && more())
                 {
                     sb.Append(next());
                 }
 
-                //if we find scientific notation, call the appending function.
-                if(((peek() == 'e') || (peek() == 'E')) && more())
+                if (!sb.ToString().Any(c => char.IsDigit(c)))
                 {
-                    scientific(sb);
+                    Console.WriteLine("Error: Invalid syntax starting with . declared on line {0}.", line);
+                    
+                    Environment.Exit(1);
+                }
+                //if we find scientific notation, call the appending function.
+                else if (((peek() == 'e') || (peek() == 'E')) && more())
+                {
+                    return scientific(sb);
                 }
 
                 //Return the real constant token.
@@ -268,8 +338,7 @@ namespace CS480Translator
             //Scientific notation found, call the appending function.
             else if (((peek() == 'e') || (peek() == 'E')) && more())
             {
-                scientific(sb);
-                return new Tokens.RCT(sb.ToString());
+                return scientific(sb);
             }
             //Nothing but digits found, return it as an integer token.
             else
@@ -313,8 +382,9 @@ namespace CS480Translator
         }
 
         //Appends the digits and sign following the 'e' in a real number.
-        private void scientific(StringBuilder sb)
+        private Tokens.RCT scientific(StringBuilder sb)
         {
+
             sb.Append(next());
             if (((peek() == '-') || (peek() == '+')) && more())
             {
@@ -330,9 +400,10 @@ namespace CS480Translator
             else
             {
                 Console.WriteLine("Error: Invalid real constant declared on line {0}.", line);
-                Console.ReadLine();
                 Environment.Exit(1);
             }
+
+            return new Tokens.RCT(sb.ToString());
         }
 
     }

@@ -26,10 +26,15 @@ namespace CS480Translator.Tokens
                 integerValue = Convert.ToInt32(value);
                 return true;
             }
-            catch
+            catch (OverflowException e)
             {
-                return false;
+                Console.WriteLine("Error: Integer constant too large to store in int value type.");
+                
+                Environment.Exit(1);
             }
+            catch { }
+
+            return false;
         }
 
         public override string ToString()

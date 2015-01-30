@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,15 +10,23 @@ namespace CS480Translator
     {
         static void Main(string[] args)
         {
-            Lexalizer lex = new Lexalizer(@"C:\stutest.in");
+
+            SymbolTable st = new SymbolTable();
+            Lexalizer lex = new Lexalizer(args[0]);
             Tokens.GenericToken token = lex.getNextToken();
 
             while (token != null)
             {
+                if (token is Tokens.IT)
+                {
+                    st.add((Tokens.IT) token);
+                }
+
                 Console.WriteLine(token.ToString());
                 token = lex.getNextToken();
             }
 
+            Console.WriteLine("\nNumber of unique IDs in symbol table: {0}", st.count());
             Console.ReadLine();
 
         }

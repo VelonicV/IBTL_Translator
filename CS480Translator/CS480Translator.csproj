@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Lexalizer.cs" />
+    <Compile Include="SymbolTable.cs" />
     <Compile Include="Tokens\BooleanConstantToken.cs" />
     <Compile Include="Tokens\BooleanOperatorToken.cs" />
     <Compile Include="Tokens\ContextSensitiveOperatorToken.cs" />
