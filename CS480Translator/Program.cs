@@ -26,8 +26,8 @@ namespace CS480Translator
                 token = lex.getNextToken();
             }
 
-            Console.WriteLine("\nNumber of unique IDs in symbol table: {0}", st.count());
-            Console.ReadLine();
+            Console.WriteLine("\nSymbol Table entries: {0}", st.count());
+            //Console.ReadLine();
 
         }
     }
