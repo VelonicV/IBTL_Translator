@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Lexalizer.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="SymbolTable.cs" />
     <Compile Include="Tokens\BooleanConstantToken.cs" />
     <Compile Include="Tokens\BooleanOperatorToken.cs" />
@@ -67,8 +68,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets. -->
-<Target Name="HelloWorld">
-  <Message Text="Hello"></Message> 
-  <Message Text="World"></Message>
-</Target>
+  <Target Name="HelloWorld">
+    <Message Text="Hello">
+    </Message>
+    <Message Text="World">
+    </Message>
+  </Target>
 </Project>
