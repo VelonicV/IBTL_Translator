@@ -17,6 +17,7 @@ namespace CS480Translator.Tokens
             {
                 throw new Exception("Error: Invalid real constant string passed into token");
             }
+            word = value;
         }
 
         protected override bool validate(string value)

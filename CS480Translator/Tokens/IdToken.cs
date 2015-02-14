@@ -8,7 +8,6 @@ namespace CS480Translator.Tokens
 {
     class IT : GenericToken
     {
-        public string idName;
 
         public IT(string value)
         {
@@ -38,13 +37,13 @@ namespace CS480Translator.Tokens
                 }
             }
 
-            idName = value;
+            word = value;
             return true;
         }
 
         public override string ToString()
         {
-            return (this.GetType().Name + ":\t" + idName);
+            return (this.GetType().Name + ":\t" + word);
         }
 
     }

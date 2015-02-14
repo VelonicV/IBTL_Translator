@@ -18,7 +18,7 @@ namespace CS480Translator
 
         public void add(Tokens.IT token)
         {
-            hash[token.idName] = token;
+            hash[token.word] = token;
         }
 
         public Tokens.IT lookup(string idName)

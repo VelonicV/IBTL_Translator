@@ -9,8 +9,8 @@ namespace CS480Translator.Tokens
     class BCT : GenericToken
     {
         public bool booleanValue;
-        private string trueString = "true";
-        private string falseString = "false";
+        private static string trueString = "true";
+        private static string falseString = "false";
 
         public BCT(string value)
         {
@@ -25,10 +25,12 @@ namespace CS480Translator.Tokens
             if (value == trueString)
             {
                 booleanValue = true;
+                word = value;
             }
             else if (value == falseString)
             {
                 booleanValue = false;
+                word = value;
             }
             else
             {

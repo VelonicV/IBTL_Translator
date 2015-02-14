@@ -9,8 +9,6 @@ namespace CS480Translator.Tokens
     class SCT : GenericToken
     {
 
-        public string stringValue;
-
         public SCT(string value)
         {
             if (!validate(value))
@@ -21,13 +19,13 @@ namespace CS480Translator.Tokens
 
         protected override bool validate(string value)
         {
-            stringValue = value;
+            word = value;
             return true;
         }
 
         public override string ToString()
         {
-            return (this.GetType().Name + ":\t" + stringValue);
+            return (this.GetType().Name + ":\t" + word);
         }
 
     }
