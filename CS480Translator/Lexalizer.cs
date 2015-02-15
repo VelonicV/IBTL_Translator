@@ -44,6 +44,11 @@ namespace CS480Translator
 
         }
 
+        public int getLine()
+        {
+            return line;
+        }
+
         //Returns the next token in the file, or null if none are left.
         public Tokens.GenericToken getNextToken()
         {

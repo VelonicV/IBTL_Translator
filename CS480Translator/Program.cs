@@ -39,6 +39,9 @@ namespace CS480Translator
             //Node.postOrderTraversal(root);
             //Console.Read();
 
+            Parser parser = new Parser(args[0]);
+            Console.ReadLine();
+
         }
     }
 }
