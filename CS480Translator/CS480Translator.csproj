@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Lexalizer.cs" />
-    <Compile Include="Node.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="SymbolTable.cs" />
     <Compile Include="TokenEquiv.cs" />
@@ -64,6 +63,9 @@
     <Compile Include="Tokens\StringConstantToken.cs" />
     <Compile Include="Tokens\TokensTester.cs" />
     <Compile Include="Tokens\VariableTypeToken.cs" />
+    <Compile Include="Tree\IParseTree.cs" />
+    <Compile Include="Tree\NonTerm.cs" />
+    <Compile Include="Tree\Term.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

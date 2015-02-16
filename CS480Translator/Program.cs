@@ -22,8 +22,6 @@ namespace CS480Translator
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
-                    Console.ReadLine();
-                    Environment.Exit(1);
                 }
 
                 Console.WriteLine();

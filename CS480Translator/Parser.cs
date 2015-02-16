@@ -9,7 +9,6 @@ namespace CS480Translator
     class Parser
     {
         //Class members.
-        private Node root;
         private Lexalizer lex;
         private SymbolTable st;
         Tokens.GenericToken prev;
@@ -19,7 +18,6 @@ namespace CS480Translator
         //Initialize class variables
         public Parser(string filePath)
         {
-            root = new Node(null, null);
             st = new SymbolTable();
             tabs = 0;
 
@@ -27,8 +25,8 @@ namespace CS480Translator
             next = lex.getNextToken();
 
             S();
-            
-            if(!(next is Tokens.EOFT))
+
+            if (!(next is Tokens.EOFT))
             {
                 throw new Exception("Grammatical Error: invalid token '" + next.word + "' following token '" + prev.word + "' found on line " + lex.getLine() + ".");
             }
@@ -578,12 +576,6 @@ namespace CS480Translator
 
             prev = next;
             next = lex.getNextToken();
-        }
-
-        //Return the built tree.
-        public Node returnTree()
-        {
-            return root;
         }
 
         //Return the symbol table;
