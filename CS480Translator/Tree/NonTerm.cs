@@ -8,10 +8,10 @@ namespace CS480Translator.Tree
 {
     class NonTerm : IParseTree
     {
-        private List<IParseTree> parent;
+        private NonTerm parent;
         private List<IParseTree> list;
 
-        public NonTerm(List<IParseTree> parent)
+        public NonTerm(NonTerm parent)
         {
             this.parent = parent;
             list = new List<IParseTree>();
@@ -22,9 +22,14 @@ namespace CS480Translator.Tree
             list.Add(node);
         }
 
-        public List<IParseTree> getParent()
+        public NonTerm getParent()
         {
             return parent;
+        }
+
+        public List<IParseTree> getList()
+        {
+            return list;
         }
 
     }

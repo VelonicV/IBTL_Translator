@@ -19,5 +19,10 @@ namespace CS480Translator.Tree
         {
             return data;
         }
+
+        public override string ToString()
+        {
+            return data.word;
+        }
     }
 }
