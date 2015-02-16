@@ -30,9 +30,7 @@ namespace CS480Translator.Tokens
             }
             catch (OverflowException e)
             {
-                Console.WriteLine("Error: Integer constant too large to store in int value type.");
-                
-                Environment.Exit(1);
+                throw new Exception("Error: Integer constant too large to store in int value type.");
             }
             catch { }
 

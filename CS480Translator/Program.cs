@@ -11,35 +11,24 @@ namespace CS480Translator
         static void Main(string[] args)
         {
 
-            //SymbolTable st = new SymbolTable();
-            //Lexalizer lex = new Lexalizer(args[0]);
-            //Tokens.GenericToken token = lex.getNextToken();
+            foreach (string arg in args)
+            {
+                Console.WriteLine("Input file: " + arg + "\n");
 
-            //while (token != null)
-            //{
-            //    if (token is Tokens.IT)
-            //    {
-            //        st.add((Tokens.IT) token);
-            //    }
+                try
+                {
+                    Parser parser = new Parser(arg);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.ReadLine();
+                    Environment.Exit(1);
+                }
 
-            //    Console.WriteLine(token.ToString());
-            //    token = lex.getNextToken();
-            //}
+                Console.WriteLine();
+            }
 
-            //Console.WriteLine("\nSymbol Table entries: {0}", st.count());
-            ////Console.ReadLine();
-
-            //Node root = new Node(null, null);
-            //Node rootChild1 = new Node(root, new Tokens.IT("test"));
-            //Node rootChild2 = new Node(root, new Tokens.IT("test2"));
-            //Node rootChild3 = new Node(root, new Tokens.IT("test3"));
-            //Node rootChild2Child1 = new Node(rootChild2, new Tokens.IT("test4"));
-            //Node rootChild2Child2 = new Node(rootChild2, new Tokens.IT("test5"));
-
-            //Node.postOrderTraversal(root);
-            //Console.Read();
-
-            Parser parser = new Parser(args[0]);
             Console.ReadLine();
 
         }

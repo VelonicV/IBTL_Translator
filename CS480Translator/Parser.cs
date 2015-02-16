@@ -8,35 +8,47 @@ namespace CS480Translator
 {
     class Parser
     {
-
+        //Class members.
         private Node root;
         private Lexalizer lex;
+        private SymbolTable st;
+        Tokens.GenericToken prev;
         Tokens.GenericToken next;
         int tabs;
 
+        //Initialize class variables
         public Parser(string filePath)
         {
-            //root = new Node(null, null);
+            root = new Node(null, null);
+            st = new SymbolTable();
+            tabs = 0;
+
             lex = new Lexalizer(filePath);
             next = lex.getNextToken();
-            tabs = 0;
+
             S();
+            
+            if(!(next is Tokens.EOFT))
+            {
+                throw new Exception("Grammatical Error: invalid token '" + next.word + "' following token '" + prev.word + "' found on line " + lex.getLine() + ".");
+            }
+
         }
 
+        // S -> ( S" | constants S' | name S'
         private void S()
         {
-            
-            if (next.isLP())
+            if (TokenEquiv.isLP(next))
             {
                 pan();
                 tabs++;
                 SPP();
                 
             }
-            else if (next.isConstant() || next.isName())
+            else if (TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 pan();
-                S();
+                SP();
             }
             else
             {
@@ -45,14 +57,15 @@ namespace CS480Translator
             
         }
 
+        // S' -> S S' | EPSILON
         private void SP()
         {
             
-            if (next == null || next.isRP())
+            if (TokenEquiv.isEOF(next) || TokenEquiv.isRP(next))
             {
                 //EPSILON
             }
-            else if (next.isLP() || next.isConstant() || next.isName())
+            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 S();
                 SP();
@@ -65,19 +78,20 @@ namespace CS480Translator
             
         }
 
+        // S" -> ) S' | S ) S' | expr' S'
         private void SPP()
         {
             
-            if (next.isRP())
+            if (TokenEquiv.isRP(next))
             {
                 tabs--;
                 pan();
                 SP();
             }
-            else if (next.isLP() || next.isConstant() || next.isName())
+            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 S();
-                if (next.isRP())
+                if (TokenEquiv.isRP(next))
                 {
                     tabs--;
                     pan();
@@ -88,7 +102,9 @@ namespace CS480Translator
                     err();
                 }
             }
-            else if (next.isAssign() || next.isBinary() || next.isUnary() || next.isMinus() || next.isStdout() || next.isIf() || next.isWhile() || next.isLet())
+            else if (TokenEquiv.isAssign(next) || TokenEquiv.isBinary(next) || TokenEquiv.isUnary(next) 
+                   || TokenEquiv.isMinus(next) || TokenEquiv.isStdout(next) || TokenEquiv.isIf(next) 
+                   || TokenEquiv.isWhile(next) || TokenEquiv.isLet(next))
             {
                 exprP();
                 SP();
@@ -100,17 +116,18 @@ namespace CS480Translator
             
         }
 
+        // expr -> ( expr' | constants | name
         private void expr()
         {
             
-            if (next.isLP())
+            if (TokenEquiv.isLP(next))
             {
                 pan();
                 tabs++;
                 exprP();
                 
             }
-            else if (next.isConstant() || next.isName())
+            else if (TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 pan();
             }
@@ -121,14 +138,15 @@ namespace CS480Translator
             
         }
 
+        // expr' -> oper' | stmts'
         private void exprP()
         {
             
-            if (next.isAssign() || next.isBinary() || next.isUnary() || next.isMinus())
+            if (TokenEquiv.isAssign(next) || TokenEquiv.isBinary(next) || TokenEquiv.isUnary(next) || TokenEquiv.isMinus(next))
             {
                 operP();
             }
-            else if (next.isStdout() || next.isIf() || next.isWhile() || next.isLet())
+            else if (TokenEquiv.isStdout(next) || TokenEquiv.isIf(next) || TokenEquiv.isWhile(next) || TokenEquiv.isLet(next))
             {
                 stmtsP();
             }
@@ -139,17 +157,18 @@ namespace CS480Translator
             
         }
 
+        // oper -> ( oper' | constants | name
         private void oper()
         {
             
-            if (next.isLP())
+            if (TokenEquiv.isLP(next))
             {
-                tabs++;
                 pan();
+                tabs++;
                 operP();
                 
             }
-            else if (next.isConstant() || next.isName())
+            else if (TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 pan();
             }
@@ -160,17 +179,18 @@ namespace CS480Translator
             
         }
 
+        // oper' -> := name oper ) | binops oper oper ) | unops oper ) | - oper oper"
         private void operP()
         {
             
-            if (next.isAssign())
+            if (TokenEquiv.isAssign(next))
             {
                 pan();
-                if (next.isName())
+                if (TokenEquiv.isName(next))
                 {
                     pan();
                     oper();
-                    if (next.isRP())
+                    if (TokenEquiv.isRP(next))
                     {
                         tabs--;
                         pan();
@@ -185,12 +205,12 @@ namespace CS480Translator
                     err();
                 }
             }
-            else if (next.isBinary())
+            else if (TokenEquiv.isBinary(next))
             {
                 pan();
                 oper();
                 oper();
-                if (next.isRP())
+                if (TokenEquiv.isRP(next))
                 {
                     tabs--;
                     pan();
@@ -200,11 +220,11 @@ namespace CS480Translator
                     err();
                 }
             }
-            else if (next.isUnary())
+            else if (TokenEquiv.isUnary(next))
             {
                 pan();
                 oper();
-                if (next.isRP())
+                if (TokenEquiv.isRP(next))
                 {
                     tabs--;
                     pan();
@@ -214,7 +234,7 @@ namespace CS480Translator
                     err();
                 }
             }
-            else if (next.isMinus())
+            else if (TokenEquiv.isMinus(next))
             {
                 pan();
                 oper();
@@ -227,13 +247,14 @@ namespace CS480Translator
             
         }
 
+        // oper" -> oper ) | )
         private void operPP()
         {
             
-            if (next.isLP() || next.isConstant() || next.isName())
+            if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 oper();
-                if (next.isRP())
+                if (TokenEquiv.isRP(next))
                 {
                     tabs--;
                     pan();
@@ -243,7 +264,7 @@ namespace CS480Translator
                     err();
                 }
             }
-            else if (next.isRP())
+            else if (TokenEquiv.isRP(next))
             {
                 tabs--;
                 pan();
@@ -255,13 +276,14 @@ namespace CS480Translator
             
         }
 
+        // stmts -> ( stmts'
         private void stmts()
         {
             
-            if (next.isLP())
+            if (TokenEquiv.isLP(next))
             {
-                tabs++;
                 pan();
+                tabs++;
                 stmtsP();
                 
             }
@@ -272,22 +294,23 @@ namespace CS480Translator
             
         }
 
+        // stmts' -> printstmts | whilestmts | ifstmts | letstmts
         private void stmtsP()
         {
             
-            if (next.isStdout())
+            if (TokenEquiv.isStdout(next))
             {
                 printstmts();
             }
-            else if (next.isWhile())
+            else if (TokenEquiv.isWhile(next))
             {
                 whilestmts();
             }
-            else if (next.isIf())
+            else if (TokenEquiv.isIf(next))
             {
                 ifstmts();
             }
-            else if (next.isLet())
+            else if (TokenEquiv.isLet(next))
             {
                 letstmts();
             }
@@ -298,14 +321,15 @@ namespace CS480Translator
             
         }
 
+        // printstmts -> stdout oper )
         private void printstmts()
         {
             
-            if (next.isStdout())
+            if (TokenEquiv.isStdout(next))
             {
                 pan();
                 oper();
-                if (next.isRP())
+                if (TokenEquiv.isRP(next))
                 {
                     tabs--;
                     pan();
@@ -322,10 +346,11 @@ namespace CS480Translator
             
         }
 
+        // ifstmts -> if expr expr ifstmts'
         private void ifstmts()
         {
             
-            if (next.isIf())
+            if (TokenEquiv.isIf(next))
             {
                 pan();
                 expr();
@@ -339,18 +364,19 @@ namespace CS480Translator
             
         }
 
+        // ifstmts' -> ) | expr )
         private void ifstmtsP()
         {
             
-            if (next.isRP())
+            if (TokenEquiv.isRP(next))
             {
                 tabs--;
                 pan();
             }
-            else if (next.isLP() || next.isConstant() || next.isName())
+            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 expr();
-                if (next.isRP())
+                if (TokenEquiv.isRP(next))
                 {
                     tabs--;
                     pan();
@@ -367,15 +393,16 @@ namespace CS480Translator
             
         }
 
+        // whilestmts -> while expr exprlist )
         private void whilestmts()
         {
             
-            if (next.isWhile())
+            if (TokenEquiv.isWhile(next))
             {
                 pan();
                 expr();
                 exprlist();
-                if (next.isRP())
+                if (TokenEquiv.isRP(next))
                 {
                     tabs--;
                     pan();
@@ -392,10 +419,11 @@ namespace CS480Translator
             
         }
 
+        // exprlist -> expr exprlist'
         private void exprlist()
         {
             
-            if (next.isLP() || next.isConstant() || next.isName())
+            if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 expr();
                 exprlistP();
@@ -407,14 +435,15 @@ namespace CS480Translator
             
         }
 
+        // exprlist' -> exprlist | EPSILON
         private void exprlistP()
         {
             
-            if (next.isLP() || next.isConstant() || next.isName())
+            if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
                 exprlist();
             }
-            else if (next.isRP())
+            else if (TokenEquiv.isRP(next))
             {
                 //EPSILON
             }
@@ -425,16 +454,17 @@ namespace CS480Translator
             
         }
 
+        // letstmts -> let ( varlist ) )
         private void letstmts()
         {
             
-            if (next.isLet())
+            if (TokenEquiv.isLet(next))
             {
                 pan();
-                if (next.isLP())
+                if (TokenEquiv.isLP(next))
                 {
                     varlist();
-                    if (next.isRP())
+                    if (TokenEquiv.isRP(next))
                     {
                         tabs--;
                         pan();
@@ -456,20 +486,21 @@ namespace CS480Translator
             
         }
 
+        // varlist -> ( name type ) varlist'
         private void varlist()
         {
             
-            if (next.isLP())
+            if (TokenEquiv.isLP(next))
             {
                 pan();
                 tabs++;
-                if (next.isName())
+                if (TokenEquiv.isName(next))
                 {
                     pan();
-                    if (next.isType())
+                    if (TokenEquiv.isType(next))
                     {
                         pan();
-                        if (next.isRP())
+                        if (TokenEquiv.isRP(next))
                         {
                             tabs--;
                             pan();
@@ -497,13 +528,14 @@ namespace CS480Translator
             
         }
 
+        // varlist' -> varlist | EPSILON
         private void varlistP()
         {
-            if (next.isLP())
+            if (TokenEquiv.isLP(next))
             {
                 varlist();
             }
-            else if (next.isRP())
+            else if (TokenEquiv.isRP(next))
             {
                 //EPSILON
             }
@@ -513,13 +545,24 @@ namespace CS480Translator
             }
         }
 
+        //Generate exception on error.
         private void err()
         {
-            Console.WriteLine("Error: unexpected token '{0}' on line {1}.", next.word, lex.getLine());
-            Console.ReadLine();
-            Environment.Exit(1);
+            if (TokenEquiv.isEOF(next))
+            {
+                throw new Exception("Grammatical Error: unexpected end of file reached on line " + lex.getLine() + ".");
+            }
+            else if(prev == null)
+            {
+                throw new Exception("Grammatical Error: invalid starting token '" + next.word + "' found on line " + lex.getLine() + ".");
+            }
+            else
+            {
+                throw new Exception("Grammatical Error: invalid token '" + next.word + "' following token '" + prev.word + "' found on line " + lex.getLine() + ".");
+            }
         }
 
+        //Print the current token, add it to the symbol table if it's an ID, and get the next token.
         private void pan()
         {
             for (int i = 0; i < tabs; i++)
@@ -527,12 +570,26 @@ namespace CS480Translator
                 Console.Write("  ");
             }
             Console.WriteLine(next.word);
+
+            if (next is Tokens.IT)
+            {
+                st.add((Tokens.IT)next);
+            }
+
+            prev = next;
             next = lex.getNextToken();
         }
 
+        //Return the built tree.
         public Node returnTree()
         {
             return root;
+        }
+
+        //Return the symbol table;
+        public SymbolTable returnST()
+        {
+            return st;
         }
 
     }

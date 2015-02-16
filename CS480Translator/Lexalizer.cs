@@ -26,24 +26,16 @@ namespace CS480Translator
         //Attempts to open the file at the given path and initializes the fields.
         public Lexalizer(string filePath)
         {
-            try
-            {
-                file = File.Open(filePath, FileMode.Open, FileAccess.Read);
-            }
-            catch
-            {
-                Console.WriteLine("Error: could not open given file in read-only mode.");
-                Environment.Exit(1);
-            }
+            file = File.Open(filePath, FileMode.Open, FileAccess.Read);
 
             buffer = new byte[BUFFER_SIZE];
             buff_pos = 0;
             refillBuffer();
 
             line = 1;
-
         }
 
+        //Return the current line the lexalizer is on.
         public int getLine()
         {
             return line;
@@ -94,12 +86,11 @@ namespace CS480Translator
                 }
                 else
                 {
-                    Console.WriteLine("Error: Invalid syntax starting with {0} declared on line {1}.", peek(), line);
-                    Environment.Exit(1);
+                    throw new Exception("Lexical Error: Invalid syntax starting with '" + peek() + "' declared on line " + line + ".");
                 }
             }
 
-            return null;
+            return new Tokens.EOFT("$");
         }
 
         //Letter-based token parser.
@@ -166,9 +157,7 @@ namespace CS480Translator
                 }
                 else
                 {
-                    Console.WriteLine("Error: Invalid syntax starting with : declared on line {0}.", line);
-                    Environment.Exit(1);
-                    return null;
+                    throw new Exception("Lexical Error: Invalid syntax starting with ':' declared on line " + line + ".");
                 }
             }
         }
@@ -203,9 +192,7 @@ namespace CS480Translator
                 }
                 else
                 {
-                    Console.WriteLine("Error: Invalid syntax starting with ! declared on line {0}.", line);
-                    Environment.Exit(1);
-                    return null;
+                    throw new Exception("Lexical Error: Invalid syntax starting with '!' declared on line " + line + ".");
                 }
             }
 
@@ -279,8 +266,7 @@ namespace CS480Translator
                     }
                     else
                     {
-                        Console.WriteLine("Error: Invalid character escape sequence in string on line {0}.", line);
-                        Environment.Exit(1);
+                        throw new Exception("Lexical Error: Invalid character escape sequence in string on line " + line + ".");
                     }
 
                 }
@@ -296,9 +282,7 @@ namespace CS480Translator
             }
             else
             {
-                Console.WriteLine("Error: End of line reached without finding second pair of quotation marks on line {0}.", line); 
-                Environment.Exit(1);
-                return null;
+                throw new Exception("Lexical Error: End of line reached without finding second pair of quotation marks on line " + line + "."); 
             }
 
         }
@@ -327,9 +311,7 @@ namespace CS480Translator
 
                 if (!sb.ToString().Any(c => char.IsDigit(c)))
                 {
-                    Console.WriteLine("Error: Invalid syntax starting with . declared on line {0}.", line);
-                    
-                    Environment.Exit(1);
+                    throw new Exception("Lexical Error: Invalid syntax starting with '.' declared on line " + line + ".");
                 }
                 //if we find scientific notation, call the appending function.
                 else if (((peek() == 'e') || (peek() == 'E')) && more())
@@ -404,8 +386,7 @@ namespace CS480Translator
             }
             else
             {
-                Console.WriteLine("Error: Invalid real constant declared on line {0}.", line);
-                Environment.Exit(1);
+                throw new Exception("Lexical Error: Invalid real constant declared on line " + line + ".");
             }
 
             return new Tokens.RCT(sb.ToString());

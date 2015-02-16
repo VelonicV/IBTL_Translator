@@ -29,9 +29,7 @@ namespace CS480Translator.Tokens
             }
             catch (OverflowException e)
             {
-                Console.WriteLine("Error: Real constant too large to store in real value type.");
-                
-                Environment.Exit(1);
+                throw new Exception("Error: Real constant too large to store in real value type.");
             }
             catch { }
 
