@@ -59,9 +59,13 @@ namespace CS480Translator
                     next();
                     return createStringToken();
                 }
-                else if ((peek() == '+') || (peek() == '-'))
+                else if ((peek() == '+')) //|| (peek() == '-'))
                 {
                     return new Tokens.CSOP(Char.ToString(next()));
+                }
+                else if (peek() == '-')
+                {
+                    return createMinusToken();
                 }
                 else if ((peek() == '*') || (peek() == '/') || (peek() == '%') || (peek() == '^'))
                 {
@@ -91,6 +95,30 @@ namespace CS480Translator
             }
 
             return new Tokens.EOFT("$");
+        }
+
+        private Tokens.GenericToken createMinusToken()
+        {
+            next();
+
+            if (Char.IsDigit(peek()) || (peek() == '.'))
+            {
+                Tokens.GenericToken temp = createNumToken();
+                if (temp is Tokens.ICT)
+                {
+                    return new Tokens.ICT("-" + temp.word);
+                }
+                else
+                {
+                    return new Tokens.RCT("-" + temp.word);
+                }
+
+            }
+            else
+            {
+                return new Tokens.CSOP("-");
+            }
+
         }
 
         //Letter-based token parser.

@@ -14,13 +14,11 @@ namespace CS480Translator
         private Tokens.GenericToken prev;
         private Tokens.GenericToken next;
         private Tree.NonTerm root;
-        //int tabs;
 
         //Initialize class variables
         public Parser(string filePath)
         {
             st = new SymbolTable();
-            //tabs = 0;
 
             lex = new Lexalizer(filePath);
             next = lex.getNextToken();
@@ -42,7 +40,6 @@ namespace CS480Translator
             if (TokenEquiv.isLP(next))
             {
                 pan(node);
-                //tabs++;
                 Tree.NonTerm temp = new Tree.NonTerm(node);
                 node.add(temp);
                 SPP(temp);
@@ -86,7 +83,6 @@ namespace CS480Translator
             
             if (TokenEquiv.isRP(next))
             {
-                //tabs--;
                 pan(node.getParent());
                 SP(node.getParent());
             }
@@ -95,7 +91,6 @@ namespace CS480Translator
                 S(node);
                 if (TokenEquiv.isRP(next))
                 {
-                    //tabs--;
                     pan(node.getParent());
                     SP(node.getParent());
                 }
@@ -125,7 +120,6 @@ namespace CS480Translator
             if (TokenEquiv.isLP(next))
             {
                 pan(node);
-                //tabs++;
                 Tree.NonTerm temp = new Tree.NonTerm(node);
                 node.add(temp);
                 exprP(temp);
@@ -168,7 +162,6 @@ namespace CS480Translator
             if (TokenEquiv.isLP(next))
             {
                 pan(node);
-                //tabs++;
                 Tree.NonTerm temp = new Tree.NonTerm(node);
                 node.add(temp);
                 operP(temp);
@@ -198,7 +191,6 @@ namespace CS480Translator
                     oper(node);
                     if (TokenEquiv.isRP(next))
                     {
-                        //tabs--;
                         pan(node.getParent());
                     }
                     else
@@ -218,7 +210,6 @@ namespace CS480Translator
                 oper(node);
                 if (TokenEquiv.isRP(next))
                 {
-                    //tabs--;
                     pan(node.getParent());
                 }
                 else
@@ -232,7 +223,6 @@ namespace CS480Translator
                 oper(node);
                 if (TokenEquiv.isRP(next))
                 {
-                    //tabs--;
                     pan(node.getParent());
                 }
                 else
@@ -262,7 +252,6 @@ namespace CS480Translator
                 oper(node);
                 if (TokenEquiv.isRP(next))
                 {
-                    //tabs--;
                     pan(node.getParent());
                 }
                 else
@@ -272,7 +261,6 @@ namespace CS480Translator
             }
             else if (TokenEquiv.isRP(next))
             {
-                //tabs--;
                 pan(node.getParent());
             }
             else
@@ -289,11 +277,9 @@ namespace CS480Translator
             if (TokenEquiv.isLP(next))
             {
                 pan(node);
-                //tabs++;
                 Tree.NonTerm temp = new Tree.NonTerm(node);
                 node.add(temp);
-                stmtsP(temp);
-                
+                stmtsP(temp);        
             }
             else
             {
@@ -339,7 +325,6 @@ namespace CS480Translator
                 oper(node);
                 if (TokenEquiv.isRP(next))
                 {
-                    //tabs--;
                     pan(node.getParent());
                 }
                 else
@@ -378,7 +363,6 @@ namespace CS480Translator
             
             if (TokenEquiv.isRP(next))
             {
-                //tabs--;
                 pan(node.getParent());
             }
             else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
@@ -386,7 +370,6 @@ namespace CS480Translator
                 expr(node);
                 if (TokenEquiv.isRP(next))
                 {
-                    //tabs--;
                     pan(node.getParent());
                 }
                 else
@@ -412,7 +395,6 @@ namespace CS480Translator
                 exprlist(node);
                 if (TokenEquiv.isRP(next))
                 {
-                    //tabs--;
                     pan(node.getParent());
                 }
                 else
@@ -471,11 +453,21 @@ namespace CS480Translator
                 pan(node);
                 if (TokenEquiv.isLP(next))
                 {
-                    varlist(node);
+                    pan(node);
+                    Tree.NonTerm temp = new Tree.NonTerm(node);
+                    node.add(temp);
+                    varlist(temp);
                     if (TokenEquiv.isRP(next))
                     {
-                        //tabs--;
-                        pan(node.getParent());
+                        pan(temp.getParent());
+                        if (TokenEquiv.isRP(next))
+                        {
+                            pan(temp.getParent().getParent());
+                        }
+                        else
+                        {
+                            err();
+                        }
                     }
                     else
                     {
@@ -501,7 +493,6 @@ namespace CS480Translator
             if (TokenEquiv.isLP(next))
             {
                 pan(node);
-                //tabs++;
                 Tree.NonTerm temp = new Tree.NonTerm(node);
                 node.add(temp);
                 if (TokenEquiv.isName(next))
@@ -512,7 +503,6 @@ namespace CS480Translator
                         pan(temp);
                         if (TokenEquiv.isRP(next))
                         {
-                            //tabs--;
                             pan(temp.getParent());
                             varlistP(temp.getParent());
                         }
@@ -575,12 +565,6 @@ namespace CS480Translator
         // Add the token to the parse tree, add it to the symbol table if it's an ID, and get the next token.
         private void pan(Tree.NonTerm node)
         {
-            //for (int i = 0; i < tabs; i++)
-            //{
-            //    Console.Write("  ");
-            //}
-            //Console.WriteLine(next.word);
-
             node.add(new Tree.Term(next));
 
             if (next is Tokens.IT)
