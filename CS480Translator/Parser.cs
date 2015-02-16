@@ -30,7 +30,8 @@ namespace CS480Translator
             if (!(next is Tokens.EOFT))
             {
                 throw new Exception("Error: invalid token '" + next.word + "' following token '" 
-                                    + prev.word + "' found on line " + lex.getLine() + ", character " + lex.getCharacter() + ".");
+                                    + prev.word + "' found on line " + lex.getLine() + ", character " 
+                                    + lex.getCharacter() + ".");
             }
 
         }

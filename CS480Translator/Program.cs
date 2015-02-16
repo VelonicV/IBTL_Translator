@@ -10,35 +10,53 @@ namespace CS480Translator
     {
         static void Main(string[] args)
         {
+            //Files to parse
             List<String> files = new List<string>();
+            //Quiet mode, automatically disabled
+            bool quiet = false;
 
+            //Parse the arguments, adding files and toggling flags.
             foreach (string arg in args)
             {
-                if (!arg.StartsWith("-"))
-                {
-                    files.Add(arg);
-                }
-                else
+                if (arg.StartsWith("-"))
                 {
                     if (arg == "-h")
                     {
                         printHelp();
                     }
+                    if (arg == "-q")
+                    {
+                        quiet = true;
+                    }
                     else
                     {
                         Console.WriteLine("Invalid flag: " + arg);
+                        Console.WriteLine("Use -h flag to see program options and instructions.");
                         Environment.Exit(1);
                     }
                 }
+                else
+                {
+                    files.Add(arg);
+                }
             }
 
+            //Run the parser for each file.
             foreach (string file in files)
             {
                 Console.WriteLine("Input file: " + file);
                 try
                 {
                     Parser parser = new Parser(file);
-                    printTree(parser.returnTree(), 0);
+                    if (quiet)
+                    {
+                        Console.WriteLine("Grammar is valid.");
+                    }
+                    else
+                    {
+                        printTree(parser.returnTree(), 0);
+                    }
+
                 }
                 catch (Exception e)
                 {
@@ -51,6 +69,7 @@ namespace CS480Translator
 
         }
 
+        // Parse the tree recursively, outputting the terminals and their depth.
         private static void printTree(Tree.NonTerm root, int level)
         {
             foreach (Tree.IParseTree node in root.getList())
@@ -70,11 +89,15 @@ namespace CS480Translator
             }
         }
 
+        // Print the help menu.
         private static void printHelp()
         {
-            Console.WriteLine("Flags:\n\t-h: print help\n");
+            Console.WriteLine("Flags:\n       -h: print this help menu\n       -q: quiet, only show errors or valid grammar confirmation\n");
             Console.WriteLine("Instructions: Any non-flags are treated as paths to input files.");
-            Console.WriteLine("              All input files are processed in the order given.");
+            Console.WriteLine("              All input files are parsed in the order given.");
+            Console.WriteLine("              Errors caused during parsing will not halt the processing");
+            Console.WriteLine("              of valid files.");
+            Console.ReadLine();
             Environment.Exit(0);
         }
     }
