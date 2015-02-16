@@ -20,8 +20,9 @@ namespace CS480Translator
         private int buff_pos;
         private int buff_end;
 
-        //Line number
+        //Line and character number
         private int line;
+        private int character;
 
         //Attempts to open the file at the given path and initializes the fields.
         public Lexalizer(string filePath)
@@ -33,12 +34,19 @@ namespace CS480Translator
             refillBuffer();
 
             line = 1;
+            character = 0;
         }
 
         //Return the current line the lexalizer is on.
         public int getLine()
         {
             return line;
+        }
+
+        //Return the current character the lexalizer is on.
+        public int getCharacter()
+        {
+            return character;
         }
 
         //Returns the next token in the file, or null if none are left.
@@ -83,6 +91,7 @@ namespace CS480Translator
                 {
                     next();
                     line++;
+                    character = 0;
                 }
                 else if((peek() == ' ') || (peek() == '\t') || (peek() == '\r'))
                 {
@@ -90,7 +99,8 @@ namespace CS480Translator
                 }
                 else
                 {
-                    throw new Exception("Lexical Error: Invalid syntax starting with '" + peek() + "' declared on line " + line + ".");
+                    throw new Exception("Error: Invalid syntax starting with '" + peek() 
+                                        + "' declared on line " + line + ", character " + character + ".");
                 }
             }
 
@@ -185,7 +195,8 @@ namespace CS480Translator
                 }
                 else
                 {
-                    throw new Exception("Lexical Error: Invalid syntax starting with ':' declared on line " + line + ".");
+                    throw new Exception("Error: Invalid syntax starting with ':' declared on line " 
+                                       + line + ", character " + character + ".");
                 }
             }
         }
@@ -220,7 +231,8 @@ namespace CS480Translator
                 }
                 else
                 {
-                    throw new Exception("Lexical Error: Invalid syntax starting with '!' declared on line " + line + ".");
+                    throw new Exception("Error: Invalid syntax starting with '!' declared on line " 
+                                       + line + ", character " + character + ".");
                 }
             }
 
@@ -294,7 +306,8 @@ namespace CS480Translator
                     }
                     else
                     {
-                        throw new Exception("Lexical Error: Invalid character escape sequence in string on line " + line + ".");
+                        throw new Exception("Error: Invalid character escape sequence in string on line " 
+                                           + line + ", character " + character + ".");
                     }
 
                 }
@@ -310,7 +323,8 @@ namespace CS480Translator
             }
             else
             {
-                throw new Exception("Lexical Error: End of line reached without finding second pair of quotation marks on line " + line + "."); 
+                throw new Exception("Error: End of line reached without finding second pair of quotation marks on line " 
+                                   + line + ", character " + character + "."); 
             }
 
         }
@@ -339,7 +353,8 @@ namespace CS480Translator
 
                 if (!sb.ToString().Any(c => char.IsDigit(c)))
                 {
-                    throw new Exception("Lexical Error: Invalid syntax starting with '.' declared on line " + line + ".");
+                    throw new Exception("Error: Invalid syntax starting with '.' declared on line " 
+                                       + line + ", character " + character + ".");
                 }
                 //if we find scientific notation, call the appending function.
                 else if (((peek() == 'e') || (peek() == 'E')) && more())
@@ -380,6 +395,7 @@ namespace CS480Translator
                 refillBuffer();
             }
 
+            character++;
             return next_char;
         }
 
@@ -414,7 +430,8 @@ namespace CS480Translator
             }
             else
             {
-                throw new Exception("Lexical Error: Invalid real constant declared on line " + line + ".");
+                throw new Exception("Error: Invalid real constant declared on line " 
+                                   + line + ", character " + character + ".");
             }
 
             return new Tokens.RCT(sb.ToString());

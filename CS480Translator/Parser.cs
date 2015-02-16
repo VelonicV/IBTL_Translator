@@ -29,7 +29,8 @@ namespace CS480Translator
 
             if (!(next is Tokens.EOFT))
             {
-                throw new Exception("Grammatical Error: invalid token '" + next.word + "' following token '" + prev.word + "' found on line " + lex.getLine() + ".");
+                throw new Exception("Error: invalid token '" + next.word + "' following token '" 
+                                    + prev.word + "' found on line " + lex.getLine() + ", character " + lex.getCharacter() + ".");
             }
 
         }
@@ -65,7 +66,8 @@ namespace CS480Translator
             {
                 //EPSILON
             }
-            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
+            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) 
+                    || TokenEquiv.isName(next))
             {
                 S(node);
                 SP(node);
@@ -86,7 +88,8 @@ namespace CS480Translator
                 pan(node.getParent());
                 SP(node.getParent());
             }
-            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
+            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) 
+                    || TokenEquiv.isName(next))
             {
                 S(node);
                 if (TokenEquiv.isRP(next))
@@ -99,9 +102,10 @@ namespace CS480Translator
                     err();
                 }
             }
-            else if (TokenEquiv.isAssign(next) || TokenEquiv.isBinary(next) || TokenEquiv.isUnary(next) 
-                   || TokenEquiv.isMinus(next) || TokenEquiv.isStdout(next) || TokenEquiv.isIf(next) 
-                   || TokenEquiv.isWhile(next) || TokenEquiv.isLet(next))
+            else if (TokenEquiv.isAssign(next) || TokenEquiv.isBinary(next)
+                    || TokenEquiv.isUnary(next) || TokenEquiv.isMinus(next)
+                    || TokenEquiv.isStdout(next) || TokenEquiv.isIf(next) 
+                    || TokenEquiv.isWhile(next) || TokenEquiv.isLet(next))
             {
                 exprP(node);
                 SP(node);
@@ -140,11 +144,13 @@ namespace CS480Translator
         private void exprP(Tree.NonTerm node)
         {
             
-            if (TokenEquiv.isAssign(next) || TokenEquiv.isBinary(next) || TokenEquiv.isUnary(next) || TokenEquiv.isMinus(next))
+            if (TokenEquiv.isAssign(next) || TokenEquiv.isBinary(next) 
+               || TokenEquiv.isUnary(next) || TokenEquiv.isMinus(next))
             {
                 operP(node);
             }
-            else if (TokenEquiv.isStdout(next) || TokenEquiv.isIf(next) || TokenEquiv.isWhile(next) || TokenEquiv.isLet(next))
+            else if (TokenEquiv.isStdout(next) || TokenEquiv.isIf(next) 
+                    || TokenEquiv.isWhile(next) || TokenEquiv.isLet(next))
             {
                 stmtsP(node);
             }
@@ -247,7 +253,8 @@ namespace CS480Translator
         private void operPP(Tree.NonTerm node)
         {
             
-            if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
+            if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) 
+               || TokenEquiv.isName(next))
             {
                 oper(node);
                 if (TokenEquiv.isRP(next))
@@ -365,7 +372,8 @@ namespace CS480Translator
             {
                 pan(node.getParent());
             }
-            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
+            else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) 
+                    || TokenEquiv.isName(next))
             {
                 expr(node);
                 if (TokenEquiv.isRP(next))
@@ -550,15 +558,20 @@ namespace CS480Translator
         {
             if (TokenEquiv.isEOF(next))
             {
-                throw new Exception("Grammatical Error: unexpected end of file reached on line " + lex.getLine() + ".");
+                throw new Exception("Error: unexpected end of file reached on line " 
+                                    + lex.getLine() + ", character " + lex.getCharacter() + ".");
             }
             else if(prev == null)
             {
-                throw new Exception("Grammatical Error: invalid starting token '" + next.word + "' found on line " + lex.getLine() + ".");
+                throw new Exception("Error: invalid starting token '" + next.word 
+                                    + "' found on line " + lex.getLine() + ", character " 
+                                    + lex.getCharacter() + ".");
             }
             else
             {
-                throw new Exception("Grammatical Error: invalid token '" + next.word + "' following token '" + prev.word + "' found on line " + lex.getLine() + ".");
+                throw new Exception("Error: invalid token '" + next.word + "' following token '" 
+                                    + prev.word + "' found on line " + lex.getLine() 
+                                    + ", character " + lex.getCharacter() + ".");
             }
         }
 
