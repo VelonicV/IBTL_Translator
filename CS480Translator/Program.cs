@@ -12,8 +12,14 @@ namespace CS480Translator
         {
             //Files to parse
             List<String> files = new List<string>();
+
             //Quiet mode, automatically disabled
             bool quiet = false;
+
+            //If no arguments are entered, print the help menu.
+            if(args.Length == 0) {
+                printHelp();
+            }
 
             //Parse the arguments, adding files and toggling flags.
             foreach (string arg in args)
@@ -62,7 +68,6 @@ namespace CS480Translator
                 {
                     Console.WriteLine(e.Message);
                 }
-                Console.WriteLine();
             }
 
             Console.ReadLine();
@@ -97,7 +102,6 @@ namespace CS480Translator
             Console.WriteLine("              All input files are parsed in the order given.");
             Console.WriteLine("              Errors caused during parsing will not halt the processing");
             Console.WriteLine("              of valid files.");
-            Console.ReadLine();
             Environment.Exit(0);
         }
     }

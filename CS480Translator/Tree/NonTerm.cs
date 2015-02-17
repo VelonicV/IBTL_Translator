@@ -9,17 +9,17 @@ namespace CS480Translator.Tree
     class NonTerm : IParseTree
     {
         private NonTerm parent;
-        private List<IParseTree> list;
+        private Queue<IParseTree> list;
 
         public NonTerm(NonTerm parent)
         {
             this.parent = parent;
-            list = new List<IParseTree>();
+            list = new Queue<IParseTree>();
         }
 
         public void add(IParseTree node)
         {
-            list.Add(node);
+            list.Enqueue(node);
         }
 
         public NonTerm getParent()
@@ -27,7 +27,7 @@ namespace CS480Translator.Tree
             return parent;
         }
 
-        public List<IParseTree> getList()
+        public Queue<IParseTree> getList()
         {
             return list;
         }

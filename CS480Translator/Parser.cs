@@ -9,11 +9,20 @@ namespace CS480Translator
     class Parser
     {
         //Class members.
+
+        //Lexalizer object.
         private Lexalizer lex;
+
+        //Symbol table to store ids.
         private SymbolTable st;
+
+        //The previous and next token retrieved from the lexalizer.
         private Tokens.GenericToken prev;
         private Tokens.GenericToken next;
+
+        //The root of the parse tree and the nonterminal parent being worked on.
         private Tree.NonTerm root;
+        private Tree.NonTerm node;
 
         //Initialize class variables
         public Parser(string filePath)
@@ -24,8 +33,9 @@ namespace CS480Translator
             next = lex.getNextToken();
 
             root = new Tree.NonTerm(null);
+            node = root;
 
-            S(root);
+            S();
 
             if (!(next is Tokens.EOFT))
             {
@@ -33,36 +43,30 @@ namespace CS480Translator
                                     + prev.word + "' found on line " + lex.getLine() + ", character " 
                                     + lex.getCharacter() + ".");
             }
-
         }
 
         // S -> ( S" | constants S' | name S'
-        private void S(Tree.NonTerm node)
+        private void S()
         {
             if (TokenEquiv.isLP(next))
             {
-                pan(node);
-                Tree.NonTerm temp = new Tree.NonTerm(node);
-                node.add(temp);
-                SPP(temp);
-                
+                leftParen();
+                SPP();           
             }
             else if (TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
-                pan(node);
-                SP(node);
+                pan();
+                SP();
             }
             else
             {
                 err();
             }
-            
         }
 
         // S' -> S S' | EPSILON
-        private void SP(Tree.NonTerm node)
+        private void SP()
         {
-            
             if (TokenEquiv.isEOF(next) || TokenEquiv.isRP(next))
             {
                 //EPSILON
@@ -70,33 +74,31 @@ namespace CS480Translator
             else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) 
                     || TokenEquiv.isName(next))
             {
-                S(node);
-                SP(node);
+                S();
+                SP();
             }
             else
             {
                 err();
             }
-            
         }
 
         // S" -> ) S' | S ) S' | expr' S'
-        private void SPP(Tree.NonTerm node)
+        private void SPP()
         {
-            
             if (TokenEquiv.isRP(next))
             {
-                pan(node.getParent());
-                SP(node.getParent());
+                rightParen();
+                SP();
             }
             else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) 
                     || TokenEquiv.isName(next))
             {
-                S(node);
+                S();
                 if (TokenEquiv.isRP(next))
                 {
-                    pan(node.getParent());
-                    SP(node.getParent());
+                    rightParen();
+                    SP();
                 }
                 else
                 {
@@ -108,97 +110,83 @@ namespace CS480Translator
                     || TokenEquiv.isStdout(next) || TokenEquiv.isIf(next) 
                     || TokenEquiv.isWhile(next) || TokenEquiv.isLet(next))
             {
-                exprP(node);
-                SP(node);
+                exprP();
+                SP();
             }
             else
             {
                 err();
             }
-            
         }
 
         // expr -> ( expr' | constants | name
-        private void expr(Tree.NonTerm node)
+        private void expr()
         {
-            
             if (TokenEquiv.isLP(next))
             {
-                pan(node);
-                Tree.NonTerm temp = new Tree.NonTerm(node);
-                node.add(temp);
-                exprP(temp);
-                
+                leftParen();
+                exprP();               
             }
             else if (TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
-                pan(node);
+                pan();
             }
             else
             {
                 err();
             }
-            
         }
 
         // expr' -> oper' | stmts'
-        private void exprP(Tree.NonTerm node)
+        private void exprP()
         {
-            
             if (TokenEquiv.isAssign(next) || TokenEquiv.isBinary(next) 
                || TokenEquiv.isUnary(next) || TokenEquiv.isMinus(next))
             {
-                operP(node);
+                operP();
             }
             else if (TokenEquiv.isStdout(next) || TokenEquiv.isIf(next) 
                     || TokenEquiv.isWhile(next) || TokenEquiv.isLet(next))
             {
-                stmtsP(node);
+                stmtsP();
             }
             else
             {
                 err();
             }
-            
         }
 
         // oper -> ( oper' | constants | name
-        private void oper(Tree.NonTerm node)
+        private void oper()
         {
-            
             if (TokenEquiv.isLP(next))
             {
-                pan(node);
-                Tree.NonTerm temp = new Tree.NonTerm(node);
-                node.add(temp);
-                operP(temp);
-                
+                leftParen();
+                operP();           
             }
             else if (TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
-                pan(node);
+                pan();
             }
             else
             {
                 err();
             }
-            
         }
 
         // oper' -> := name oper ) | binops oper oper ) | unops oper ) | - oper oper"
-        private void operP(Tree.NonTerm node)
+        private void operP()
         {
-            
             if (TokenEquiv.isAssign(next))
             {
-                pan(node);
+                pan();
                 if (TokenEquiv.isName(next))
                 {
-                    pan(node);
-                    oper(node);
+                    pan();
+                    oper();
                     if (TokenEquiv.isRP(next))
                     {
-                        pan(node.getParent());
+                        rightParen();
                     }
                     else
                     {
@@ -212,12 +200,12 @@ namespace CS480Translator
             }
             else if (TokenEquiv.isBinary(next))
             {
-                pan(node);
-                oper(node);
-                oper(node);
+                pan();
+                oper();
+                oper();
                 if (TokenEquiv.isRP(next))
                 {
-                    pan(node.getParent());
+                    rightParen();
                 }
                 else
                 {
@@ -226,11 +214,11 @@ namespace CS480Translator
             }
             else if (TokenEquiv.isUnary(next))
             {
-                pan(node);
-                oper(node);
+                pan();
+                oper();
                 if (TokenEquiv.isRP(next))
                 {
-                    pan(node.getParent());
+                    rightParen();
                 }
                 else
                 {
@@ -239,28 +227,26 @@ namespace CS480Translator
             }
             else if (TokenEquiv.isMinus(next))
             {
-                pan(node);
-                oper(node);
-                operPP(node);
+                pan();
+                oper();
+                operPP();
             }
             else
             {
                 err();
             }
-            
         }
 
         // oper" -> oper ) | )
-        private void operPP(Tree.NonTerm node)
+        private void operPP()
         {
-            
             if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) 
                || TokenEquiv.isName(next))
             {
-                oper(node);
+                oper();
                 if (TokenEquiv.isRP(next))
                 {
-                    pan(node.getParent());
+                    rightParen();
                 }
                 else
                 {
@@ -269,71 +255,63 @@ namespace CS480Translator
             }
             else if (TokenEquiv.isRP(next))
             {
-                pan(node.getParent());
+                rightParen();
             }
             else
             {
                 err();
             }
-            
         }
 
         // stmts -> ( stmts'
-        private void stmts(Tree.NonTerm node)
+        private void stmts()
         {
-            
             if (TokenEquiv.isLP(next))
             {
-                pan(node);
-                Tree.NonTerm temp = new Tree.NonTerm(node);
-                node.add(temp);
-                stmtsP(temp);        
+                leftParen();
+                stmtsP();        
             }
             else
             {
                 err();
             }
-            
         }
 
         // stmts' -> printstmts | whilestmts | ifstmts | letstmts
-        private void stmtsP(Tree.NonTerm node)
+        private void stmtsP()
         {
-            
             if (TokenEquiv.isStdout(next))
             {
-                printstmts(node);
+                printstmts();
             }
             else if (TokenEquiv.isWhile(next))
             {
-                whilestmts(node);
+                whilestmts();
             }
             else if (TokenEquiv.isIf(next))
             {
-                ifstmts(node);
+                ifstmts();
             }
             else if (TokenEquiv.isLet(next))
             {
-                letstmts(node);
+                letstmts();
             }
             else
             {
                 err();
             }
-            
         }
 
         // printstmts -> stdout oper )
-        private void printstmts(Tree.NonTerm node)
+        private void printstmts()
         {
-            
             if (TokenEquiv.isStdout(next))
             {
-                pan(node);
-                oper(node);
+                pan();
+                oper();
                 if (TokenEquiv.isRP(next))
                 {
-                    pan(node.getParent());
+                    rightParen();
                 }
                 else
                 {
@@ -343,43 +321,39 @@ namespace CS480Translator
             else
             {
                 err();
-            }
-            
+            }  
         }
 
         // ifstmts -> if expr expr ifstmts'
-        private void ifstmts(Tree.NonTerm node)
-        {
-            
+        private void ifstmts()
+        {   
             if (TokenEquiv.isIf(next))
             {
-                pan(node);
-                expr(node);
-                expr(node);
-                ifstmtsP(node);
+                pan();
+                expr();
+                expr();
+                ifstmtsP();
             }
             else 
             {
                 err();
-            }
-            
+            } 
         }
 
         // ifstmts' -> ) | expr )
-        private void ifstmtsP(Tree.NonTerm node)
+        private void ifstmtsP()
         {
-            
             if (TokenEquiv.isRP(next))
             {
-                pan(node.getParent());
+                rightParen();
             }
             else if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) 
                     || TokenEquiv.isName(next))
             {
-                expr(node);
+                expr();
                 if (TokenEquiv.isRP(next))
                 {
-                    pan(node.getParent());
+                    rightParen();
                 }
                 else
                 {
@@ -390,21 +364,19 @@ namespace CS480Translator
             {
                 err();
             }
-            
         }
 
         // whilestmts -> while expr exprlist )
-        private void whilestmts(Tree.NonTerm node)
+        private void whilestmts()
         {
-            
             if (TokenEquiv.isWhile(next))
             {
-                pan(node);
-                expr(node);
-                exprlist(node);
+                pan();
+                expr();
+                exprlist();
                 if (TokenEquiv.isRP(next))
                 {
-                    pan(node.getParent());
+                    rightParen();
                 }
                 else
                 {
@@ -415,32 +387,28 @@ namespace CS480Translator
             {
                 err();
             }
-            
         }
 
         // exprlist -> expr exprlist'
-        private void exprlist(Tree.NonTerm node)
-        {
-            
+        private void exprlist()
+        { 
             if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
-                expr(node);
-                exprlistP(node);
+                expr();
+                exprlistP();
             }
             else
             {
                 err();
-            }
-            
+            }   
         }
 
         // exprlist' -> exprlist | EPSILON
-        private void exprlistP(Tree.NonTerm node)
-        {
-            
+        private void exprlistP()
+        {     
             if (TokenEquiv.isLP(next) || TokenEquiv.isConstant(next) || TokenEquiv.isName(next))
             {
-                exprlist(node);
+                exprlist();
             }
             else if (TokenEquiv.isRP(next))
             {
@@ -449,29 +417,25 @@ namespace CS480Translator
             else
             {
                 err();
-            }
-            
+            }        
         }
 
         // letstmts -> let ( varlist ) )
-        private void letstmts(Tree.NonTerm node)
-        {
-            
+        private void letstmts()
+        {   
             if (TokenEquiv.isLet(next))
             {
-                pan(node);
+                pan();
                 if (TokenEquiv.isLP(next))
                 {
-                    pan(node);
-                    Tree.NonTerm temp = new Tree.NonTerm(node);
-                    node.add(temp);
-                    varlist(temp);
+                    leftParen();
+                    varlist();
                     if (TokenEquiv.isRP(next))
                     {
-                        pan(temp.getParent());
+                        rightParen();
                         if (TokenEquiv.isRP(next))
                         {
-                            pan(temp.getParent().getParent());
+                            rightParen();          
                         }
                         else
                         {
@@ -496,24 +460,22 @@ namespace CS480Translator
         }
 
         // varlist -> ( name type ) varlist'
-        private void varlist(Tree.NonTerm node)
+        private void varlist()
         {
             
             if (TokenEquiv.isLP(next))
             {
-                pan(node);
-                Tree.NonTerm temp = new Tree.NonTerm(node);
-                node.add(temp);
+                leftParen();
                 if (TokenEquiv.isName(next))
                 {
-                    pan(temp);
+                    pan();
                     if (TokenEquiv.isType(next))
                     {
-                        pan(temp);
+                        pan();
                         if (TokenEquiv.isRP(next))
                         {
-                            pan(temp.getParent());
-                            varlistP(temp.getParent());
+                            rightParen();
+                            varlistP();
                         }
                         else
                         {
@@ -538,11 +500,11 @@ namespace CS480Translator
         }
 
         // varlist' -> varlist | EPSILON
-        private void varlistP(Tree.NonTerm node)
+        private void varlistP()
         {
             if (TokenEquiv.isLP(next))
             {
-                varlist(node);
+                varlist();
             }
             else if (TokenEquiv.isRP(next))
             {
@@ -577,7 +539,7 @@ namespace CS480Translator
         }
 
         // Add the token to the parse tree, add it to the symbol table if it's an ID, and get the next token.
-        private void pan(Tree.NonTerm node)
+        private void pan()
         {
             node.add(new Tree.Term(next));
 
@@ -596,9 +558,25 @@ namespace CS480Translator
             return st;
         }
 
+        //Return tree.
         public Tree.NonTerm returnTree()
         {
             return root;
+        }
+
+        //Consume a left paren and add a new non-term to work within.
+        private void leftParen()
+        {
+            pan();
+            node = new Tree.NonTerm(node);
+            node.getParent().add(node);
+        }
+
+        //Consume a right parent and adjust the non-terminal being worked on.
+        private void rightParen()
+        {
+            node = node.getParent();
+            pan();
         }
 
     }
