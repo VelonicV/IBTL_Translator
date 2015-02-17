@@ -69,9 +69,6 @@ namespace CS480Translator
                     Console.WriteLine(e.Message);
                 }
             }
-
-            Console.ReadLine();
-
         }
 
         // Parse the tree recursively, outputting the terminals and their depth.

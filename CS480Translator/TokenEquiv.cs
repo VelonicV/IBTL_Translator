@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CS480Translator
 {
+    //Provides static method for checking for grammatical terminal to token equivalence.
     class TokenEquiv
     {
         public static bool isType(Tokens.GenericToken token)

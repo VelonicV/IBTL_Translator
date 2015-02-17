@@ -107,6 +107,7 @@ namespace CS480Translator
             return new Tokens.EOFT("$");
         }
 
+        //Create a minus token or a negative number, depending on context.
         private Tokens.GenericToken createMinusToken()
         {
             next();
