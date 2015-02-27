@@ -129,7 +129,6 @@ namespace CS480Translator
             {
                 return new Tokens.CSOP("-");
             }
-
         }
 
         //Letter-based token parser.
@@ -236,7 +235,6 @@ namespace CS480Translator
                                        + line + ", character " + character + ".");
                 }
             }
-
         }
 
         //String token parser function.

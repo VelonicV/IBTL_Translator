@@ -17,7 +17,8 @@ namespace CS480Translator
             bool quiet = false;
 
             //If no arguments are entered, print the help menu.
-            if(args.Length == 0) {
+            if(args.Length == 0) 
+            {
                 printHelp();
             }
 
@@ -62,7 +63,6 @@ namespace CS480Translator
                     {
                         printTree(parser.returnTree(), 0);
                     }
-
                 }
                 catch (Exception e)
                 {

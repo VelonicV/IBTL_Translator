@@ -8,8 +8,6 @@ namespace CS480Translator
 {
     class Parser
     {
-        //Class members.
-
         //Lexalizer object.
         private Lexalizer lex;
 
@@ -545,7 +543,7 @@ namespace CS480Translator
 
             if (next is Tokens.IT)
             {
-                st.add((Tokens.IT)next);
+                st.add((Tokens.IT) next);
             }
 
             prev = next;
