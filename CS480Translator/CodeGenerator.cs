@@ -139,7 +139,7 @@ namespace CS480Translator {
         //Basic invalid return type error function.
         private type err(Tokens.GenericToken op) {
 
-            throw new Exception("GC Error: invalid type in '" + op.word + "' function on line "
+            throw new Exception("GC Error: invalid parameter type in '" + op.word + "' function on line "
                     + line + ", character " + character + ".");
 
         }

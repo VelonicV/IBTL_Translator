@@ -14,9 +14,6 @@ namespace CS480Translator
             //Files to parse
             List<String> files = new List<string>();
 
-            //Quiet mode, automatically disabled
-            bool quiet = false;
-
             //If no arguments are entered, print the help menu.
             if(args.Length == 0) 
             {
@@ -31,10 +28,6 @@ namespace CS480Translator
                     if (arg == "-h")
                     {
                         printHelp();
-                    }
-                    if (arg == "-q")
-                    {
-                        quiet = true;
                     }
                     else
                     {
@@ -52,59 +45,28 @@ namespace CS480Translator
             //Run the parser for each file.
             foreach (string file in files)
             {
-                Console.WriteLine("Input file: " + file);
                 try
                 {
                     CodeGenerator cg = new CodeGenerator(file);
                     Console.WriteLine(cg.getCode());
-                    File.WriteAllText("C:\\output.out", cg.getCode());
-                    //Parser parser = new Parser(file);
-                    //if (quiet)
-                    //{
-                    //    Console.WriteLine("Grammar is valid.");
-                    //}
-                    //else
-                    //{
-                    //    printTree(parser.returnTree(), 0);
-                    //}
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
+
+                break;
             }
 
-            Console.ReadLine();
-        }
-
-        // Parse the tree recursively, outputting the terminals and their depth.
-        private static void printTree(Tree.NonTerm root, int level)
-        {
-            foreach (Tree.IParseTree node in root.getList())
-            {
-                if (node is Tree.Term)
-                {
-                    for (int i = 0; i < level; i++)
-                    {
-                        Console.Write("  ");
-                    }
-                    Console.WriteLine(node.ToString());
-                }
-                else
-                {
-                    printTree((Tree.NonTerm) node, level + 1);
-                }
-            }
         }
 
         // Print the help menu.
         private static void printHelp()
         {
-            Console.WriteLine("Flags:\n       -h: print this help menu\n       -q: quiet, only show errors or valid grammar confirmation\n");
+            Console.WriteLine("Flags:\n       -h: print this help menu\n");
             Console.WriteLine("Instructions: Any non-flags are treated as paths to input files.");
-            Console.WriteLine("              All input files are parsed in the order given.");
-            Console.WriteLine("              Errors caused during parsing will not halt the processing");
-            Console.WriteLine("              of valid files.");
+            Console.WriteLine("              Only the first input file is compiled.");
+            Console.WriteLine("              Errors caused during compilation will print an error.");
             Environment.Exit(0);
         }
     }
