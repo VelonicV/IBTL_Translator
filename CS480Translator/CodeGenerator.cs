@@ -20,6 +20,9 @@ namespace CS480Translator {
         private int f;
         private int w;
 
+        private int line;
+        private int character;
+
         //Flag for if currently in a definiton.
         private bool inDef;
 
@@ -32,6 +35,8 @@ namespace CS480Translator {
 
             f = 0;
             w = 0;
+            line = 0;
+            character = 0;
             inDef = false;
 
             init();
@@ -91,7 +96,9 @@ namespace CS480Translator {
         private type func(Tree.Term op, Tree.NonTerm pars) {
 
             Tokens.GenericToken token = op.getData();
-
+            line = op.getLine();
+            character = op.getCharacter();
+            
             //First operator is a constant.
             if (token is Tokens.BCT || token is Tokens.ICT || token is Tokens.RCT || token is Tokens.SCT) {
                 if (pars.getList().Count == 0) {
@@ -125,10 +132,19 @@ namespace CS480Translator {
             }
             else {
                 throw new Exception("GC Error: invalid token in function selector on line " 
-                    + op.getLine() + ", character " + op.getCharacter() + "." );
+                    + line + ", character " + character + "." );
             }
         }
 
+        //Basic invalid return type error function.
+        private type err(Tokens.GenericToken op) {
+
+            throw new Exception("GC Error: invalid type in '" + op.word + "' function on line "
+                    + line + ", character " + character + ".");
+
+        }
+
+        //Keyword operator, parameters depends on the function.
         private type keywordOP(Tokens.KT op, Tree.NonTerm pars) {
 
             if (op.word == "stdout") {
@@ -147,7 +163,7 @@ namespace CS480Translator {
                     code.Append("boolType n\n");
                 }
                 else {
-                    throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                    err(op);
                 }
             }
             else if (op.word == "if") {
@@ -193,7 +209,7 @@ namespace CS480Translator {
                     }
                 }
                 else {
-                    throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                    err(op);
                 }
             }
             else if (op.word == "while") {
@@ -214,7 +230,8 @@ namespace CS480Translator {
                 }
             }
             else {
-                throw new Exception("GC Error: invalid keyword token in keyword function");
+                throw new Exception("GC Error: invalid keyword token in keyword function on line "
+                        + line + ", character " + character + ".");
             }
 
             return type.voidT;
@@ -228,7 +245,7 @@ namespace CS480Translator {
 
             type first = getType(pars);
             if (!(first == type.boolT)) {
-                throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                err(op);
             }
 
             code.Append("while\n");
@@ -286,7 +303,7 @@ namespace CS480Translator {
                     //no converting or swapping needed.
                 }
                 else {
-                    throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                    return err(op);
                 }
 
                 code.Append("f+\n");
@@ -307,7 +324,7 @@ namespace CS480Translator {
                         return type.realT;
                     }
                     else {
-                        throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                        return err(op);
                     }
                 }
                 else {
@@ -330,7 +347,7 @@ namespace CS480Translator {
                         //no converting or swapping needed.
                     }
                     else {
-                        throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                        return err(op);
                     }
 
                     code.Append("f-\n");
@@ -380,7 +397,7 @@ namespace CS480Translator {
                 //no converting or swapping needed.
             }
             else {
-                throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                err(op);
             }
 
             //Real parameters, perform floating point operation.
@@ -391,7 +408,8 @@ namespace CS480Translator {
                 code.Append("f/\n");
             }
             else if (op.word == "%") {
-                throw new Exception("GC Error: mod operation requires two integer parameters");
+                throw new Exception("GC Error: mod operation requires two integer parameters on line "
+                        + line + ", character " + character + ".");
             }
             else {
                 code.Append("f**\n");
@@ -430,7 +448,7 @@ namespace CS480Translator {
                 code.Append("f" + opGforth + "\n");
             }
             else {
-                throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                err(op);
             }
 
             return type.boolT;
@@ -444,7 +462,7 @@ namespace CS480Translator {
                 code.Append("s>f\n");
             }
             else if (first != type.realT) {
-                throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                err(op);
             }
 
             code.Append("f" + op.word + "\n");
@@ -463,7 +481,7 @@ namespace CS480Translator {
                     code.Append("invert\n");
                 }
                 else {
-                    throw new Exception("GC Error: invalid type in 'not' function");
+                    err(op);
                 }
 
             }
@@ -476,7 +494,7 @@ namespace CS480Translator {
                     code.Append(op.word + "\n");
                 }
                 else {
-                    throw new Exception("GC Error: invalid type in '" + op.word + "' function");
+                    err(op);
                 }
             }
 
@@ -523,7 +541,8 @@ namespace CS480Translator {
                 return type.stringT;
             }
             else {
-                throw new Exception("GC Error: invalid token in constant function, maybe ID?");
+                throw new Exception("GC Error: invalid token in constant function on line "
+                        + line + ", character " + character + ".");
             }
 
         }
@@ -532,6 +551,5 @@ namespace CS480Translator {
         public string getCode() {
             return code.ToString();
         }
-
     }
 }
