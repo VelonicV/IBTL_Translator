@@ -22,6 +22,11 @@ namespace CS480Translator.Tree
             list.Enqueue(node);
         }
 
+        public IParseTree remove() {
+
+            return list.Dequeue();
+        }
+
         public NonTerm getParent()
         {
             return parent;

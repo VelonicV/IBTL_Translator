@@ -539,7 +539,7 @@ namespace CS480Translator
         // Add the token to the parse tree, add it to the symbol table if it's an ID, and get the next token.
         private void pan()
         {
-            node.add(new Tree.Term(next));
+            node.add(new Tree.Term(next, lex.getLine(), lex.getCharacter()));
 
             if (next is Tokens.IT)
             {
@@ -565,7 +565,10 @@ namespace CS480Translator
         //Consume a left paren and add a new non-term to work within.
         private void leftParen()
         {
-            pan();
+            //pan();
+            prev = next;
+            next = lex.getNextToken();
+
             node = new Tree.NonTerm(node);
             node.getParent().add(node);
         }
@@ -574,7 +577,18 @@ namespace CS480Translator
         private void rightParen()
         {
             node = node.getParent();
-            pan();
+
+            prev = next;
+            next = lex.getNextToken();
+            //pan();
+        }
+
+        public int getLine() {
+            return lex.getLine();
+        }
+
+        public int getCharacter() {
+            return lex.getCharacter();
         }
 
     }

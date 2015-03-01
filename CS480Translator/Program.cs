@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace CS480Translator
 {
@@ -54,21 +55,26 @@ namespace CS480Translator
                 Console.WriteLine("Input file: " + file);
                 try
                 {
-                    Parser parser = new Parser(file);
-                    if (quiet)
-                    {
-                        Console.WriteLine("Grammar is valid.");
-                    }
-                    else
-                    {
-                        printTree(parser.returnTree(), 0);
-                    }
+                    CodeGenerator cg = new CodeGenerator(file);
+                    Console.WriteLine(cg.getCode());
+                    File.WriteAllText("C:\\output.out", cg.getCode());
+                    //Parser parser = new Parser(file);
+                    //if (quiet)
+                    //{
+                    //    Console.WriteLine("Grammar is valid.");
+                    //}
+                    //else
+                    //{
+                    //    printTree(parser.returnTree(), 0);
+                    //}
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
             }
+
+            Console.ReadLine();
         }
 
         // Parse the tree recursively, outputting the terminals and their depth.
