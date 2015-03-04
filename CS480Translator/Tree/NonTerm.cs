@@ -6,7 +6,6 @@ namespace CS480Translator.Tree
     {
         private NonTerm parent;
         private Queue<IParseTree> list;
-        private SymbolTable scope;
 
         public NonTerm(NonTerm parent)
         {

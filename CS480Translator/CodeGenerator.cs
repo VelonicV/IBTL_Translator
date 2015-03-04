@@ -14,6 +14,9 @@ namespace CS480Translator {
         //StringBuilder for appending code to.
         private StringBuilder code;
 
+        //Symbol table from parser
+        private SymbolTable st;
+
         //Counters for if and while functions, as well as global variables.
         private int f;
         private int w;
@@ -29,6 +32,7 @@ namespace CS480Translator {
 
             Parser parser = new Parser(file);
             root = parser.returnTree();
+            st = parser.returnST();
 
             code = new StringBuilder();
 
@@ -58,6 +62,9 @@ namespace CS480Translator {
 
             foreach (Tree.IParseTree node in root.getList()) {
 
+                if (node is Tree.NonTerm && root.getList().Count == 1) {
+                    start(node as Tree.NonTerm);
+                }
                 if (node is Tree.NonTerm) {
                     unwrapSelect(node as Tree.NonTerm);
                 }
@@ -83,6 +90,7 @@ namespace CS480Translator {
                 return type.voidT;
             }
             else {
+
                 Tree.IParseTree first = node.remove();
                 if (first is Tree.NonTerm) {
                     return unwrapSelect(first as Tree.NonTerm);
@@ -233,6 +241,48 @@ namespace CS480Translator {
             else if (op.word == "let") {
                 letHelper(pars);
             }
+            else if (op.word == ":=") {
+
+                Tree.Term id = pars.remove() as Tree.Term;
+                Tokens.IT idToken = id.getData() as Tokens.IT;
+                idToken = st.lookup(idToken.word);
+                type second = getType(pars);
+
+                if (idToken.idType != type.voidT) {
+
+                    if (idToken.idType == second) {
+
+                        code.Append(idToken.codeId + "\n");
+
+                        if (idToken.idType == type.intT) {
+                            code.Append("!\n");
+                        }
+                        else if (idToken.idType == type.realT) {
+                            code.Append("f!\n");
+                        }
+                        else if (idToken.idType == type.boolT) {
+                            code.Append("!\n");
+                        }
+                        //else string type
+                        else {
+                            code.Append("2!\n");
+                        }
+
+                    }
+                    else {
+                        throw new Exception("GC Error: assignment type mismatch on line "
+                                + line + ", character " + character + ".");
+                    }
+
+                }
+                else {
+                    throw new Exception("GC Error: cannot assign value to undeclared variable on line "
+                            + line + ", character " + character + ".");
+                }
+
+                idToken.assigned = true;
+
+            }
             else {
                 throw new Exception("GC Error: invalid keyword token in keyword function on line "
                         + line + ", character " + character + ".");
@@ -242,8 +292,57 @@ namespace CS480Translator {
 
         }
 
+        //Parses through let statement assignments
         private void letHelper(Tree.NonTerm vars) {
 
+            vars = vars.remove() as Tree.NonTerm;
+
+            foreach (Tree.IParseTree var in vars.getList()) {
+
+                //Unwrap values. Guaranteed by parser.
+                Tree.NonTerm nameTypePair = var as Tree.NonTerm;
+                Tree.Term name = nameTypePair.remove() as Tree.Term;
+                Tree.Term variableType = nameTypePair.remove() as Tree.Term;
+
+                Tokens.IT nameToken = name.getData() as Tokens.IT;
+                Tokens.VTT variableTypeToken = variableType.getData() as Tokens.VTT;
+
+                nameToken = st.lookup(nameToken.word);
+
+                if (nameToken.idType == type.voidT) {
+
+                    nameToken.codeId = "v" + v;
+
+                    if (variableTypeToken.word == "int") {
+
+                        nameToken.idType = type.intT;
+                        code.Append("variable " + nameToken.codeId + "\n");
+                    }
+                    else if (variableTypeToken.word == "real") {
+
+                        nameToken.idType = type.realT;
+                        code.Append("fvariable " + nameToken.codeId + "\n");
+                    }
+                    else if (variableTypeToken.word == "bool") {
+
+                        nameToken.idType = type.boolT;
+                        code.Append("variable " + nameToken.codeId + "\n");
+                    }
+                    // else string type
+                    else {
+
+                        nameToken.idType = type.stringT;
+                        code.Append("stringVar " + nameToken.codeId + "\n");
+                    }
+
+                }
+                else {
+                    throw new Exception("GC Error: previously initialized variable being reinitialized on line "
+                            + line + ", character " + character + ".");
+                }
+
+                v++;
+            }
         }
 
         //Outputs basic loop structure without taking definitions into account.
@@ -547,6 +646,45 @@ namespace CS480Translator {
             else if (token is Tokens.SCT) {
                 code.Append("s\" " + token.word + "\"\n");
                 return type.stringT;
+            }
+            else if (token is Tokens.IT) {
+
+                Tokens.IT id = st.lookup(token.word);
+
+                if (id.idType != type.voidT) {
+
+                    if (id.assigned) {
+
+                        code.Append(id.codeId + "\n");
+
+                        if (id.idType == type.intT) {
+                            code.Append("@\n");
+                        }
+                        else if (id.idType == type.realT) {
+                            code.Append("f@\n");
+                        }
+                        else if (id.idType == type.boolT) {
+                            code.Append("@\n");
+                        }
+                        //else string type
+                        else {
+                            code.Append("2@\n");
+                        }
+
+                    }
+                    else {
+                        throw new Exception("GC Error: id used before it has been assigned a value on line "
+                                + line + ", character " + character + ".");
+                    }
+
+                }
+                else {
+                    throw new Exception("GC Error: id used before it has been declared with a type on line "
+                            + line + ", character " + character + ".");
+                }
+
+                return id.idType;
+
             }
             else {
                 throw new Exception("GC Error: invalid token in constant function on line "

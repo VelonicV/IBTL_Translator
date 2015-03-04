@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CS480Translator
 {
@@ -41,10 +42,10 @@ namespace CS480Translator
             //Run the parser for each file.
             foreach (string file in files)
             {
-                try
-                {
+                try {
                     CodeGenerator cg = new CodeGenerator(file);
                     Console.WriteLine(cg.getCode());
+                    File.WriteAllText("C:\\output.out", cg.getCode());
                 }
                 catch (Exception e)
                 {

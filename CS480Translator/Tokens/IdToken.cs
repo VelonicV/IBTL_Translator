@@ -6,10 +6,14 @@ namespace CS480Translator.Tokens
     class IT : GenericToken
     {
         public type idType;
+        public string codeId;
+        public bool assigned;
 
         public IT(string value)
         {
             idType = type.voidT;
+            codeId = null;
+            assigned = false;
 
             if (!validate(value))
             {
