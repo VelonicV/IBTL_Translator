@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CS480Translator
 {
@@ -25,7 +21,7 @@ namespace CS480Translator
         //Initialize class variables
         public Parser(string filePath)
         {
-            st = new SymbolTable();
+            st = new SymbolTable(null);
 
             lex = new Lexalizer(filePath);
             next = lex.getNextToken();

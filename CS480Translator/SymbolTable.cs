@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 
 namespace CS480Translator
 {
     
     class SymbolTable
     {
-        Hashtable hash;
+        private Hashtable hash;
+        private SymbolTable parent;
 
-        public SymbolTable()
+        public SymbolTable(SymbolTable parent)
         {
             hash = new Hashtable();
+            this.parent = parent;
         }
 
         public void add(Tokens.IT token)

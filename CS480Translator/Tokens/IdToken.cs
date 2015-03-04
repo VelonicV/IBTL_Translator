@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CS480Translator.Tokens
 {
     class IT : GenericToken
     {
+        public type idType;
 
         public IT(string value)
         {
+            idType = type.voidT;
+
             if (!validate(value))
             {
                 throw new Exception("Error: Invalid id operator string passed into token");

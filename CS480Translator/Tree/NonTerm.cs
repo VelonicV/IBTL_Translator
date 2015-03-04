@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CS480Translator.Tree
 {
@@ -10,6 +6,7 @@ namespace CS480Translator.Tree
     {
         private NonTerm parent;
         private Queue<IParseTree> list;
+        private SymbolTable scope;
 
         public NonTerm(NonTerm parent)
         {
