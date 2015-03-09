@@ -18,15 +18,10 @@ namespace CS480Translator {
         private SymbolTable st;
 
         //Counters for if and while functions, as well as global variables.
-        private int f;
-        private int w;
         private int v;
 
         private int line;
         private int character;
-
-        //Flag for if currently in a definiton.
-        private bool inDef;
 
         public CodeGenerator(String file) {
 
@@ -36,16 +31,14 @@ namespace CS480Translator {
 
             code = new StringBuilder();
 
-            f = 0;
-            w = 0;
             v = 0;
             line = 0;
             character = 0;
-            inDef = false;
 
             init();
             start(root);
 
+            code.Append("; x\n");
             code.Append("bye");
         }
 
@@ -53,7 +46,7 @@ namespace CS480Translator {
         private void init() {
             code.Append(": boolType if s\" true\" else s\" false\" endif type ;\n");
             code.Append(": n s\\\" \\n\" type ;\n");
-            code.Append(": stringVar create 0 , 0 , ;\n");
+            code.Append(": x\n");
         }
 
         //Starts generating code by looping through every non-terminal. 
@@ -184,37 +177,12 @@ namespace CS480Translator {
                     //If only structure
                     if (pars.getList().Count == 1) {
 
-                        //We can't layer definitions within definitions, so we need to check whether we're defining one.
-                        if (!inDef) {
-                            code.Append(": f" + f + "\n");
-                            inDef = true;
-
-                            ifHelper(op, pars);
-
-                            code.Append("; f" + f + "\n");
-                            f++;
-                            inDef = false;
-                        }
-                        else {
-                            ifHelper(op, pars);
-                        }                    
+                        ifHelper(op, pars);
                     }
                     //If/Else structure
                     else {
 
-                        if (!inDef) {
-                            code.Append(": f" + f + "\n");
-                            inDef = true;
-
-                            ifElseHelper(op, pars);
-
-                            code.Append("; f" + f + "\n");
-                            f++;
-                            inDef = false;
-                        }
-                        else {
-                            ifElseHelper(op, pars);
-                        }
+                        ifElseHelper(op, pars);
                     }
                 }
                 else {
@@ -222,21 +190,7 @@ namespace CS480Translator {
                 }
             }
             else if (op.word == "while") {
-
-                if (!inDef) {
-
-                    code.Append(": w" + w + "\n");
-                    inDef = true;
-
-                    whileHelper(op, pars);
-
-                    code.Append("; w" + w + "\n");
-                    w++;
-                    inDef = false;
-                }
-                else {
-                    whileHelper(op, pars);
-                }
+                whileHelper(op, pars);
             }
             else if (op.word == "let") {
                 letHelper(pars);
@@ -252,22 +206,33 @@ namespace CS480Translator {
 
                     if (idToken.idType == second) {
 
-                        code.Append(idToken.codeId + "\n");
-
-                        if (idToken.idType == type.intT) {
-                            code.Append("!\n");
+                        if (idToken.assigned) {
+                            code.Append("to " + idToken.codeId + "\n");
                         }
-                        else if (idToken.idType == type.realT) {
-                            code.Append("f!\n");
-                        }
-                        else if (idToken.idType == type.boolT) {
-                            code.Append("!\n");
-                        }
-                        //else string type
                         else {
-                            code.Append("2!\n");
-                        }
+                            //code.Append(idToken.codeId + "\n");
+                            code.Append("{ ");
 
+                            if (idToken.idType == type.intT) {
+                                code.Append(idToken.codeId);
+                                //code.Append("!\n");
+                            }
+                            else if (idToken.idType == type.realT) {
+                                code.Append("F: " + idToken.codeId);
+                                //code.Append("f!\n");
+                            }
+                            else if (idToken.idType == type.boolT) {
+                                code.Append(idToken.codeId);
+                                //code.Append("!\n");
+                            }
+                            //else string type
+                            else {
+                                code.Append("D: " + idToken.codeId);
+                                //code.Append("2!\n");
+                            }
+
+                            code.Append(" }\n");
+                        }
                     }
                     else {
                         throw new Exception("GC Error: assignment type mismatch on line "
@@ -316,23 +281,23 @@ namespace CS480Translator {
                     if (variableTypeToken.word == "int") {
 
                         nameToken.idType = type.intT;
-                        code.Append("variable " + nameToken.codeId + "\n");
+                        //code.Append("variable " + nameToken.codeId + "\n");
                     }
                     else if (variableTypeToken.word == "real") {
 
                         nameToken.idType = type.realT;
-                        code.Append("fvariable " + nameToken.codeId + "\n");
+                        //code.Append("fvariable " + nameToken.codeId + "\n");
                     }
                     else if (variableTypeToken.word == "bool") {
 
                         nameToken.idType = type.boolT;
-                        code.Append("variable " + nameToken.codeId + "\n");
+                        //code.Append("variable " + nameToken.codeId + "\n");
                     }
                     // else string type
                     else {
 
                         nameToken.idType = type.stringT;
-                        code.Append("stringVar " + nameToken.codeId + "\n");
+                        //code.Append("stringVar " + nameToken.codeId + "\n");
                     }
 
                 }
@@ -656,20 +621,6 @@ namespace CS480Translator {
                     if (id.assigned) {
 
                         code.Append(id.codeId + "\n");
-
-                        if (id.idType == type.intT) {
-                            code.Append("@\n");
-                        }
-                        else if (id.idType == type.realT) {
-                            code.Append("f@\n");
-                        }
-                        else if (id.idType == type.boolT) {
-                            code.Append("@\n");
-                        }
-                        //else string type
-                        else {
-                            code.Append("2@\n");
-                        }
 
                     }
                     else {
