@@ -7,9 +7,6 @@ namespace CS480Translator
         //Lexalizer object.
         private Lexalizer lex;
 
-        //Symbol table to store ids.
-        private SymbolTable st;
-
         //The previous and next token retrieved from the lexalizer.
         private Tokens.GenericToken prev;
         private Tokens.GenericToken next;
@@ -21,7 +18,6 @@ namespace CS480Translator
         //Initialize class variables
         public Parser(string filePath)
         {
-            st = new SymbolTable(null);
 
             lex = new Lexalizer(filePath);
             next = lex.getNextToken();
@@ -537,20 +533,10 @@ namespace CS480Translator
         {
             node.add(new Tree.Term(next, lex.getLine(), lex.getCharacter()));
 
-            if (next is Tokens.IT)
-            {
-                st.add((Tokens.IT) next);
-            }
-
             prev = next;
             next = lex.getNextToken();
         }
 
-        //Return the symbol table;
-        public SymbolTable returnST()
-        {
-            return st;
-        }
 
         //Return tree.
         public Tree.NonTerm returnTree()

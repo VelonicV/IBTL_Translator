@@ -49,16 +49,19 @@ namespace CS480Translator {
             code.Append("bye");
         }
 
+        //Adds a new scope list. Increments scope counter.
         private void increaseScope() {
             scopeLists.Add(new List<Tokens.IT>());
             scopeCount++;
         }
 
+        //Removes the current scope. Decrements scope counter.
         private void decreaseScope() {
             scopeLists.Remove(scopeLists[scopeCount]);
             scopeCount--;
         }
 
+        //Attempts to look up variable in a the scope list and its parent scopes.
         private Tokens.IT lookup(Tokens.IT id) {
             for (int i = scopeCount; i >= 0; i--) {
                 foreach (Tokens.IT x in scopeLists[i]) {
