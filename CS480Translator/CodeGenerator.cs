@@ -82,32 +82,18 @@ namespace CS480Translator {
         }
 
         //Starts generating code by looping through every non-terminal. 
-        //If it's a term, it's guaranteed to be an ID or constant.
         private void start(Tree.NonTerm root) {
 
             foreach (Tree.IParseTree node in root.getList()) {
 
-                if (node is Tree.NonTerm && root.getList().Count == 1) {
+                if (node is Tree.NonTerm) {
                     increaseScope();
                     start(node as Tree.NonTerm);
                     decreaseScope();
                 }
-                if (node is Tree.NonTerm) {
-                    increaseScope();
-                    unwrapSelect(node as Tree.NonTerm);
-                    decreaseScope();
-                }
                 else {
-                    Tree.Term nodeTerm = node as Tree.Term;
-                    Tokens.GenericToken token = nodeTerm.getData();
-
-                    if (token is Tokens.BCT || token is Tokens.ICT || token is Tokens.RCT || token is Tokens.SCT) {
-                        constant(token);
-                    }
-                    else {
-                        throw new Exception("GC Error: ID values not currently handled on line "
-                            + nodeTerm.getLine() + ", character " + nodeTerm.getCharacter() + ".");
-                    }
+                    unwrapSelect(root);
+                    break;
                 }
             }
         }
@@ -246,6 +232,15 @@ namespace CS480Translator {
                 }
 
                 type second = getType(pars);
+
+                if ((idToken.idType == type.realT) && (second == type.intT)) {
+                    code.Append("s>f\n");
+                    second = type.realT;
+                }
+                else if ((idToken.idType == type.intT) && (second == type.realT)) {
+                    code.Append("f>s\n");
+                    second = type.intT;
+                }
 
 				if (idToken.idType == second) {
 
