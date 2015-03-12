@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace CS480Translator {
@@ -15,7 +16,9 @@ namespace CS480Translator {
         private StringBuilder code;
 
         //Symbol table from parser
-        private SymbolTable st;
+        //private SymbolTable st;
+        private List<List<Tokens.IT>> scopeLists;
+        private int scopeCount;
 
         //Counters for if and while functions, as well as global variables.
         private int v;
@@ -27,7 +30,11 @@ namespace CS480Translator {
 
             Parser parser = new Parser(file);
             root = parser.returnTree();
-            st = parser.returnST();
+            //st = parser.returnST();
+
+            scopeLists = new List<List<Tokens.IT>>();
+            scopeLists.Add(new List<Tokens.IT>());
+            scopeCount = 0;
 
             code = new StringBuilder();
 
@@ -40,6 +47,28 @@ namespace CS480Translator {
 
             code.Append("; x\n");
             code.Append("bye");
+        }
+
+        private void increaseScope() {
+            scopeLists.Add(new List<Tokens.IT>());
+            scopeCount++;
+        }
+
+        private void decreaseScope() {
+            scopeLists.Remove(scopeLists[scopeCount]);
+            scopeCount--;
+        }
+
+        private Tokens.IT lookup(Tokens.IT id) {
+            for (int i = scopeCount; i >= 0; i--) {
+                foreach (Tokens.IT x in scopeLists[i]) {
+                    if (id.word == x.word) {
+                        return x;
+                    }
+                }
+            }
+
+            return null;
         }
 
         //Add library functions.
@@ -56,10 +85,14 @@ namespace CS480Translator {
             foreach (Tree.IParseTree node in root.getList()) {
 
                 if (node is Tree.NonTerm && root.getList().Count == 1) {
+                    increaseScope();
                     start(node as Tree.NonTerm);
+                    decreaseScope();
                 }
                 if (node is Tree.NonTerm) {
+                    increaseScope();
                     unwrapSelect(node as Tree.NonTerm);
+                    decreaseScope();
                 }
                 else {
                     Tree.Term nodeTerm = node as Tree.Term;
@@ -83,10 +116,12 @@ namespace CS480Translator {
                 return type.voidT;
             }
             else {
-
                 Tree.IParseTree first = node.remove();
                 if (first is Tree.NonTerm) {
-                    return unwrapSelect(first as Tree.NonTerm);
+                    increaseScope();
+                    type temp = unwrapSelect(first as Tree.NonTerm);
+                    decreaseScope();
+                    return temp;
                 }
                 else {
                     return func(first as Tree.Term, node);
@@ -199,51 +234,45 @@ namespace CS480Translator {
 
                 Tree.Term id = pars.remove() as Tree.Term;
                 Tokens.IT idToken = id.getData() as Tokens.IT;
-                idToken = st.lookup(idToken.word);
-                type second = getType(pars);
 
-                if (idToken.idType != type.voidT) {
+                idToken = lookup(idToken);
 
-                    if (idToken.idType == second) {
-
-                        if (idToken.assigned) {
-                            code.Append("to " + idToken.codeId + "\n");
-                        }
-                        else {
-                            //code.Append(idToken.codeId + "\n");
-                            code.Append("{ ");
-
-                            if (idToken.idType == type.intT) {
-                                code.Append(idToken.codeId);
-                                //code.Append("!\n");
-                            }
-                            else if (idToken.idType == type.realT) {
-                                code.Append("F: " + idToken.codeId);
-                                //code.Append("f!\n");
-                            }
-                            else if (idToken.idType == type.boolT) {
-                                code.Append(idToken.codeId);
-                                //code.Append("!\n");
-                            }
-                            //else string type
-                            else {
-                                code.Append("D: " + idToken.codeId);
-                                //code.Append("2!\n");
-                            }
-
-                            code.Append(" }\n");
-                        }
-                    }
-                    else {
-                        throw new Exception("GC Error: assignment type mismatch on line "
-                                + line + ", character " + character + ".");
-                    }
-
-                }
-                else {
+                if (idToken == null) {
                     throw new Exception("GC Error: cannot assign value to undeclared variable on line "
                             + line + ", character " + character + ".");
                 }
+
+                type second = getType(pars);
+
+				if (idToken.idType == second) {
+
+					if (idToken.assigned) {
+						code.Append("to " + idToken.codeId + "\n");
+					}
+					else {
+						code.Append("{ ");
+
+						if (idToken.idType == type.intT) {
+							code.Append(idToken.codeId);
+						}
+						else if (idToken.idType == type.realT) {
+							code.Append("F: " + idToken.codeId);
+						}
+						else if (idToken.idType == type.boolT) {
+							code.Append(idToken.codeId);
+						}
+						else {
+							code.Append("D: " + idToken.codeId);
+						}
+
+						code.Append(" }\n");
+					}
+				}
+				else {
+					throw new Exception("GC Error: assignment type mismatch on line "
+							+ line + ", character " + character + ".");
+				}
+
 
                 idToken.assigned = true;
 
@@ -272,40 +301,38 @@ namespace CS480Translator {
                 Tokens.IT nameToken = name.getData() as Tokens.IT;
                 Tokens.VTT variableTypeToken = variableType.getData() as Tokens.VTT;
 
-                nameToken = st.lookup(nameToken.word);
-
-                if (nameToken.idType == type.voidT) {
-
-                    nameToken.codeId = "v" + v;
-
-                    if (variableTypeToken.word == "int") {
-
-                        nameToken.idType = type.intT;
-                        //code.Append("variable " + nameToken.codeId + "\n");
+                foreach (Tokens.IT x in scopeLists[scopeCount - 1]) {
+                    if (nameToken.word == x.word) {
+                        throw new Exception("GC Error: previously initialized variable in the same scope being reinitialized on line "
+                                + line + ", character " + character + ".");
                     }
-                    else if (variableTypeToken.word == "real") {
-
-                        nameToken.idType = type.realT;
-                        //code.Append("fvariable " + nameToken.codeId + "\n");
-                    }
-                    else if (variableTypeToken.word == "bool") {
-
-                        nameToken.idType = type.boolT;
-                        //code.Append("variable " + nameToken.codeId + "\n");
-                    }
-                    // else string type
-                    else {
-
-                        nameToken.idType = type.stringT;
-                        //code.Append("stringVar " + nameToken.codeId + "\n");
-                    }
-
                 }
+
+                nameToken.codeId = "v" + v;
+
+                if (variableTypeToken.word == "int") {
+
+                    nameToken.idType = type.intT;
+                    //code.Append("variable " + nameToken.codeId + "\n");
+                }
+                else if (variableTypeToken.word == "real") {
+
+                    nameToken.idType = type.realT;
+                    //code.Append("fvariable " + nameToken.codeId + "\n");
+                }
+                else if (variableTypeToken.word == "bool") {
+
+                    nameToken.idType = type.boolT;
+                    //code.Append("variable " + nameToken.codeId + "\n");
+                }
+                // else string type
                 else {
-                    throw new Exception("GC Error: previously initialized variable being reinitialized on line "
-                            + line + ", character " + character + ".");
+
+                    nameToken.idType = type.stringT;
+                    //code.Append("stringVar " + nameToken.codeId + "\n");
                 }
 
+                scopeLists[scopeCount - 1].Add(nameToken);
                 v++;
             }
         }
@@ -585,7 +612,9 @@ namespace CS480Translator {
             }
             else {
                 Tree.NonTerm firstParNon = firstPar as Tree.NonTerm;
+                increaseScope();
                 first = unwrapSelect(firstParNon);
+                decreaseScope();
             }
 
             return first;
@@ -614,23 +643,17 @@ namespace CS480Translator {
             }
             else if (token is Tokens.IT) {
 
-                Tokens.IT id = st.lookup(token.word);
+                Tokens.IT id = lookup(token as Tokens.IT);
+                if (id == null) {
+                    throw new Exception("GC Error: id used before it has been declared with a type on line "
+                            + line + ", character " + character + ".");
+                }
 
-                if (id.idType != type.voidT) {
-
-                    if (id.assigned) {
-
-                        code.Append(id.codeId + "\n");
-
-                    }
-                    else {
-                        throw new Exception("GC Error: id used before it has been assigned a value on line "
-                                + line + ", character " + character + ".");
-                    }
-
+                if (id.assigned) {
+                    code.Append(id.codeId + "\n");
                 }
                 else {
-                    throw new Exception("GC Error: id used before it has been declared with a type on line "
+                    throw new Exception("GC Error: id used before it has been assigned a value on line "
                             + line + ", character " + character + ".");
                 }
 
