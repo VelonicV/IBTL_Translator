@@ -45,7 +45,6 @@ namespace CS480Translator
                 try {
                     CodeGenerator cg = new CodeGenerator(file);
                     Console.WriteLine(cg.getCode());
-                    File.WriteAllText("C:\\output.out", cg.getCode());
                 }
                 catch (Exception e)
                 {
@@ -54,8 +53,6 @@ namespace CS480Translator
 
                 break;
             }
-
-            Console.ReadLine();
 
         }
 
